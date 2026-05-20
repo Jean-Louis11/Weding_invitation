@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-$hpt9s$8o8fh_v%a9g&n+s$1%+@s-=vd)d93&2h6ikc()xe18b
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['jeanlouisciza11.pythonanywhere.com', '127.0.0.1']
 
 
 # Application definition
@@ -121,6 +121,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'templates' / 'wedding-invitation-management-website' / 'dist',
     BASE_DIR / 'static',
 ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Champ auto-incrémenté par défaut
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
