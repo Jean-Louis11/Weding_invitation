@@ -358,6 +358,81 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
             className="absolute inset-0 w-full h-full object-cover pointer-events-none z-0"
             crossOrigin="anonymous"
           />
+
+          <div className="absolute inset-0 flex items-center justify-center z-20 px-8">
+            <div className="w-full max-w-[320px] md:max-w-[360px] text-center">
+              <div className="mb-3">
+                <div className="w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-2">
+                  <span className="text-[#c9a84c] text-lg" style={{ fontFamily: "'Great Vibes', serif" }}>M</span>
+                </div>
+                <h2 className="text-[#c9a84c] text-[10px] uppercase tracking-[0.2em] font-medium mb-3">Cérémonie & Réception</h2>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">Date</p>
+                  <p className="text-[#2a2a2a] text-sm font-medium" style={{ fontFamily: "'Georgia', serif" }}>
+                    {dateInfo.weekday ? `${dateInfo.weekday} ${dateInfo.day} ${dateInfo.month} 2026` : info.date || '—'}
+                  </p>
+                </div>
+
+                <div className="w-12 h-px bg-[#c9a84c]/40 mx-auto" />
+
+                {info.time && (
+                  <div>
+                    <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">Cérémonie</p>
+                    <p className="text-[#2a2a2a] text-sm font-medium">{info.time}</p>
+                  </div>
+                )}
+
+                {info.venueName && (
+                  <div>
+                    <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">Lieu</p>
+                    <p className="text-[#2a2a2a] text-xs font-medium">{info.venueName}</p>
+                    {info.venueAddress && (
+                      <p className="text-[#9a8a6a] text-[9px] mt-0.5">{info.venueAddress}</p>
+                    )}
+                  </div>
+                )}
+
+                <div className="w-12 h-px bg-[#c9a84c]/40 mx-auto" />
+
+                {info.receptionTime && (
+                  <div>
+                    <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">Réception</p>
+                    <p className="text-[#2a2a2a] text-sm font-medium">{info.receptionTime}</p>
+                  </div>
+                )}
+
+                {info.receptionVenue && (
+                  <div>
+                    <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">Lieu de la réception</p>
+                    <p className="text-[#2a2a2a] text-xs font-medium">{info.receptionVenue}</p>
+                    {info.receptionAddress && (
+                      <p className="text-[#9a8a6a] text-[9px] mt-0.5">{info.receptionAddress}</p>
+                    )}
+                  </div>
+                )}
+
+                {info.dressCode && (
+                  <>
+                    <div className="w-12 h-px bg-[#c9a84c]/40 mx-auto" />
+                    <div>
+                      <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">Code vestimentaire</p>
+                      <p className="text-[#2a2a2a] text-xs italic">{info.dressCode}</p>
+                    </div>
+                  </>
+                )}
+
+                {info.rsvpDeadline && (
+                  <div>
+                    <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">Date limite de réponse</p>
+                    <p className="text-[#2a2a2a] text-xs font-medium">Avant le {info.rsvpDeadline}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
