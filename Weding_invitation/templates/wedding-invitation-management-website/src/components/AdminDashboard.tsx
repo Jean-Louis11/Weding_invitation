@@ -75,7 +75,7 @@ export default function AdminDashboard({ onLogout }: Props) {
   const [userDeleted, setUserDeleted] = useState(false);
 
   // Account
-  const [currentUser, setCurrentUser] = useState<{ username: string; firstName: string; lastName: string; email: string }>({ username: '', firstName: '', lastName: '', email: '' });
+  const [currentUser, setCurrentUser] = useState<{ username: string; firstName: string; lastName: string; email: string; isSuperuser: boolean }>({ username: '', firstName: '', lastName: '', email: '', isSuperuser: false });
   const [accountSaved, setAccountSaved] = useState(false);
   const [accountLoading, setAccountLoading] = useState(false);
 
@@ -87,6 +87,12 @@ export default function AdminDashboard({ onLogout }: Props) {
       console.error('Failed to load guests:', err);
     }
   };
+
+  useEffect(() => {
+    if (currentUser.username && !currentUser.isSuperuser && (tab === 'settings' || tab === 'users')) {
+      setTab('guests');
+    }
+  }, [tab, currentUser]);
 
   useEffect(() => {
     refresh();
@@ -305,8 +311,12 @@ export default function AdminDashboard({ onLogout }: Props) {
           <nav className="flex gap-1 overflow-x-auto scrollbar-hide -mb-px" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {[
               { key: 'guests', label: 'Invités', icon: '👥' },
-              { key: 'settings', label: 'Mariage', icon: '💍' },
-              { key: 'users', label: 'Utilisateurs', icon: '🔑' },
+              ...(currentUser.isSuperuser
+                ? [
+                    { key: 'settings', label: 'Mariage', icon: '💍' },
+                    { key: 'users', label: 'Utilisateurs', icon: '🔑' },
+                  ]
+                : []),
               { key: 'account', label: 'Mon compte', icon: '👤' },
             ].map(t => (
               <button
@@ -508,7 +518,7 @@ export default function AdminDashboard({ onLogout }: Props) {
         )}
 
         {/* ===== SETTINGS TAB ===== */}
-        {tab === 'settings' && (
+        {tab === 'settings' && currentUser.isSuperuser && (
           <div className="space-y-6">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
@@ -703,7 +713,7 @@ export default function AdminDashboard({ onLogout }: Props) {
         )}
 
         {/* ===== USERS TAB ===== */}
-        {tab === 'users' && (
+        {tab === 'users' && currentUser.isSuperuser && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>

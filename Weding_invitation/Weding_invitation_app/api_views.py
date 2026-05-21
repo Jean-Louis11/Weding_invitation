@@ -200,6 +200,7 @@ def admin_me(request):
             'firstName': request.user.first_name,
             'lastName': request.user.last_name,
             'email': request.user.email,
+            'isSuperuser': request.user.is_superuser,
         })
 
     # PUT

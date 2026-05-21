@@ -76,11 +76,11 @@ export async function apiChangePassword(newPassword: string): Promise<void> {
   });
 }
 
-export async function apiGetCurrentUser(): Promise<{ username: string; firstName: string; lastName: string; email: string }> {
+export async function apiGetCurrentUser(): Promise<{ username: string; firstName: string; lastName: string; email: string; isSuperuser: boolean }> {
   return apiFetch('/admin/me/');
 }
 
-export async function apiUpdateCurrentUser(data: { firstName: string; lastName: string; email: string }): Promise<{ username: string; firstName: string; lastName: string; email: string }> {
+export async function apiUpdateCurrentUser(data: { firstName: string; lastName: string; email: string }): Promise<{ username: string; firstName: string; lastName: string; email: string; isSuperuser: boolean }> {
   return apiFetch('/admin/me/', {
     method: 'PUT',
     body: JSON.stringify(data),
