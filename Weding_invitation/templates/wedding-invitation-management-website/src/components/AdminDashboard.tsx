@@ -58,6 +58,7 @@ export default function AdminDashboard({ onLogout }: Props) {
     groomName: '', brideName: '', date: '', time: '',
     venueName: '', venueAddress: '', receptionTime: '',
     receptionVenue: '', receptionAddress: '', dressCode: '', rsvpDeadline: '',
+    lang: 'fr', card2Text: '',
   });
   const [settingsSaved, setSettingsSaved] = useState(false);
   const [settingsLoading, setSettingsLoading] = useState(false);
@@ -593,6 +594,30 @@ export default function AdminDashboard({ onLogout }: Props) {
                     <div>
                       <label className="block text-xs font-medium text-gray-600 mb-1">Date limite de réponse</label>
                       <input type="date" value={weddingInfo.rsvpDeadline} onChange={e => setWeddingInfo(prev => ({ ...prev, rsvpDeadline: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Langue & Texte carte 2 */}
+                <div className="mb-6">
+                  <h3 className="text-sm font-semibold text-[#b8860b] uppercase tracking-wider mb-3 pb-2 border-b border-[#b8860b]/20">Langue & Texte</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Langue de l'invitation</label>
+                      <select value={weddingInfo.lang} onChange={e => setWeddingInfo(prev => ({ ...prev, lang: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800">
+                        <option value="fr">Français</option>
+                        <option value="en">English</option>
+                      </select>
+                    </div>
+                    <div className="lg:col-span-2">
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Texte de la carte 2</label>
+                      <textarea
+                        value={weddingInfo.card2Text}
+                        onChange={e => setWeddingInfo(prev => ({ ...prev, card2Text: e.target.value }))}
+                        rows={3}
+                        placeholder="Texte affiché sur la deuxième carte de l'invitation..."
+                        className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800 resize-none"
+                      />
                     </div>
                   </div>
                 </div>

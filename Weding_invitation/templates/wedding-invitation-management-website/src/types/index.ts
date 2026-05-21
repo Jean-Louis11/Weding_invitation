@@ -27,4 +27,6 @@ export interface WeddingInfo {
   receptionAddress: string;
   dressCode: string;
   rsvpDeadline: string;
+  lang: string;
+  card2Text: string;
 }

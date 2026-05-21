@@ -95,6 +95,8 @@ class WeddingInfo(models.Model):
     reception_address = models.CharField(max_length=300, verbose_name="Adresse de la réception")
     dress_code = models.CharField(max_length=100, verbose_name="Code vestimentaire")
     rsvp_deadline = models.CharField(max_length=50, verbose_name="Date limite RSVP")
+    lang = models.CharField(max_length=2, choices=[('fr', 'Français'), ('en', 'English')], default='fr', verbose_name="Langue")
+    card2_text = models.TextField(blank=True, default='', verbose_name="Texte carte 2")
 
     class Meta:
         verbose_name = "Information du mariage"
@@ -120,4 +122,6 @@ class WeddingInfo(models.Model):
             'receptionAddress': self.reception_address,
             'dressCode': self.dress_code,
             'rsvpDeadline': self.rsvp_deadline,
+            'lang': self.lang,
+            'card2Text': self.card2_text,
         }

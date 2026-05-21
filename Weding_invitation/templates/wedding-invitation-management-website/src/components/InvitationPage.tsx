@@ -9,15 +9,50 @@ interface Props {
   onRsvpSubmitted: (updatedGuest: Guest) => void;
 }
 
-function formatDate(dateStr: string): { day: string; month: string; weekday: string } {
+const MONTHS = { fr: ['JANV', 'FÉV', 'MARS', 'AVR', 'MAI', 'JUIN', 'JUIL', 'AOÛT', 'SEPT', 'OCT', 'NOV', 'DÉC'], en: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'] };
+const DAYS = { fr: ['DIMANCHE', 'LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'], en: ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'] };
+
+function formatDate(dateStr: string, lang: string): { day: string; month: string; weekday: string } {
   if (!dateStr) return { day: '', month: '', weekday: '' };
   const date = new Date(dateStr);
-  const months = ['JANV', 'FÉV', 'MARS', 'AVR', 'MAI', 'JUIN', 'JUIL', 'AOÛT', 'SEPT', 'OCT', 'NOV', 'DÉC'];
-  const days = ['DIMANCHE', 'LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
+  const months = MONTHS[lang as keyof typeof MONTHS] || MONTHS.fr;
+  const days = DAYS[lang as keyof typeof DAYS] || DAYS.fr;
   return {
     day: String(date.getDate()).padStart(2, '0'),
     month: months[date.getMonth()],
     weekday: days[date.getDay()],
+  };
+}
+
+function t(lang: string): Record<string, string> {
+  const isEn = lang === 'en';
+  return {
+    invited: isEn ? 'You are invited to the\nwedding of' : 'Vous êtes invité(e) au\nmariage de',
+    and: isEn ? 'and' : 'et',
+    couple: isEn ? 'Couple invitation' : 'Invitation en couple',
+    individual: isEn ? 'Individual invitation' : 'Invitation individuelle',
+    receptionToFollow: isEn ? 'Reception to follow' : 'Réception à suivre',
+    confirm: isEn ? 'Confirm my attendance' : 'Confirmer ma présence',
+    willYouAttend: isEn ? 'Will you attend?' : 'Serez-vous présent(e) ?',
+    accept: isEn ? 'I gladly accept' : "J'accepte avec joie",
+    decline: isEn ? 'I decline' : 'Je décline',
+    message: isEn ? 'Message' : 'Message',
+    yourWishes: isEn ? 'Your wishes...' : 'Vos vœux...',
+    submit: isEn ? 'Submit' : 'Soumettre',
+    sending: isEn ? 'Sending...' : 'Envoi en cours...',
+    thankYou: isEn ? 'Thank you' : 'Merci',
+    responseSent: isEn ? 'Your response has been sent.' : 'Votre réponse a été envoyée.',
+    willAttend: isEn ? 'I will attend' : 'Je serai présent(e)',
+    cannotAttend: isEn ? 'I cannot come' : 'Je ne pourrai pas venir',
+    thankYouResponse: isEn ? 'Thank you for your response' : 'Merci pour votre réponse',
+    download: isEn ? 'Download invitation as PDF' : "Télécharger l'invitation en PDF",
+    ceremonyReception: isEn ? 'Ceremony & Reception' : 'Cérémonie & Réception',
+    date: isEn ? 'Date' : 'Date',
+    ceremony: isEn ? 'Ceremony' : 'Cérémonie',
+    venue: isEn ? 'Venue' : 'Lieu',
+    reception: isEn ? 'Reception' : 'Réception',
+    receptionVenue: isEn ? 'Reception venue' : 'Lieu de la réception',
+    dressCode: isEn ? 'Dress code' : 'Code vestimentaire',
   };
 }
 
@@ -26,6 +61,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
     groomName: '', brideName: '', date: '', time: '',
     venueName: '', venueAddress: '', receptionTime: '',
     receptionVenue: '', receptionAddress: '', dressCode: '', rsvpDeadline: '',
+    lang: 'fr', card2Text: '',
   });
   const [rsvpStatus, setRsvpStatus] = useState<'confirmed' | 'declined'>('confirmed');
   const [rsvpMessage, setRsvpMessage] = useState('');
@@ -135,7 +171,8 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
     }
   };
 
-  const dateInfo = formatDate(info.date);
+  const dateInfo = formatDate(info.date, info.lang);
+  const tr = t(info.lang);
 
   return (
     <div className="min-h-screen bg-[#f5f3f0] flex items-center justify-center p-4 md:p-8">
@@ -159,7 +196,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
                     <span className="text-[#c9a84c] text-sm" style={{ fontFamily: "'Great Vibes', serif" }}>M</span>
                   </div>
                   <p className="text-[#9a8a6a] text-[8px] uppercase tracking-[0.15em] font-light leading-tight">
-                    Vous êtes invité(e) au<br />mariage de
+                    {tr.invited.split('\n').map((line, i) => <>{i > 0 && <br />}{line}</>)}
                   </p>
                 </div>
 
@@ -167,7 +204,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
                   <h1 className="text-4xl md:text-5xl text-[#2a2a2a] font-light leading-none" style={{ fontFamily: "'Great Vibes', 'Cormorant Garamond', Georgia, serif" }}>
                     {info.groomName || 'Robert'}
                   </h1>
-                  <p className="text-[#c9a84c] text-sm my-0.5" style={{ fontFamily: "'Great Vibes', serif" }}>et</p>
+                  <p className="text-[#c9a84c] text-sm my-0.5" style={{ fontFamily: "'Great Vibes', serif" }}>{tr.and}</p>
                   <h1 className="text-4xl md:text-5xl text-[#2a2a2a] font-light leading-none" style={{ fontFamily: "'Great Vibes', 'Cormorant Garamond', Georgia, serif" }}>
                     {info.brideName || 'Sabina'}
                   </h1>
@@ -175,12 +212,12 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
 
                 <div className="mb-1.5">
                   <p className="text-[#c9a84c] text-[8px] uppercase tracking-[0.15em]">
-                    {guest.plusOne ? 'Invitation en couple' : 'Invitation individuelle'}
+                    {guest.plusOne ? tr.couple : tr.individual}
                   </p>
                 </div>
 
                 <p className="text-[#9a8a6a] text-xs italic" style={{ fontFamily: "'Great Vibes', serif" }}>
-                  Réception à suivre
+                  {tr.receptionToFollow}
                 </p>
               </div>
             </div>
@@ -192,7 +229,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
                 onClick={() => setShowRSVP(true)}
                 className="bg-[#c9a84c] hover:bg-[#b8973d] text-white px-6 py-2 rounded-full text-[10px] tracking-[0.15em] uppercase font-medium transition-all duration-300 shadow-md"
               >
-                Confirmer ma présence
+                {tr.confirm}
               </button>
             )}
           </div>
@@ -203,7 +240,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
                 <form onSubmit={handleSubmit} className="space-y-2">
                   <div>
                     <label className="block text-[#6a6a5a] text-[10px] uppercase tracking-wider mb-1">
-                      Serez-vous présent(e) ?
+                      {tr.willYouAttend}
                     </label>
                     <div className="grid grid-cols-2 gap-1.5">
                       <button
@@ -214,31 +251,31 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
                             ? 'bg-[#c9a84c] text-white'
                             : 'bg-white text-[#6a6a5a] border border-[#c9a84c]/40'
                         }`}
-                      >
-                        J'accepte avec joie
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setRsvpStatus('declined')}
-                        className={`py-1.5 rounded text-[10px] font-medium transition-all ${
-                          rsvpStatus === 'declined'
-                            ? 'bg-[#8a7a5a] text-white'
-                            : 'bg-white text-[#6a6a5a] border border-[#c9a84c]/40'
-                        }`}
-                      >
-                        Je décline
-                      </button>
+                        >
+                          {tr.accept}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setRsvpStatus('declined')}
+                          className={`py-1.5 rounded text-[10px] font-medium transition-all ${
+                            rsvpStatus === 'declined'
+                              ? 'bg-[#8a7a5a] text-white'
+                              : 'bg-white text-[#6a6a5a] border border-[#c9a84c]/40'
+                          }`}
+                        >
+                          {tr.decline}
+                        </button>
                     </div>
                   </div>
 
                   <div>
                     <label className="block text-[#6a6a5a] text-[10px] uppercase tracking-wider mb-0.5">
-                      Message
+                      {tr.message}
                     </label>
                     <textarea
                       value={rsvpMessage}
                       onChange={e => setRsvpMessage(e.target.value)}
-                      placeholder="Vos vœux..."
+                      placeholder={tr.yourWishes}
                       rows={2}
                       className="w-full bg-white border border-[#c9a84c]/30 rounded px-2 py-1 text-[#6a6a5a] text-[10px] focus:outline-none focus:border-[#c9a84c] resize-none"
                     />
@@ -249,7 +286,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
                     disabled={loading}
                     className="w-full bg-[#c9a84c] hover:bg-[#b8973d] text-white py-1.5 rounded text-[10px] tracking-wider uppercase font-medium transition-all shadow disabled:opacity-60"
                   >
-                    {loading ? 'Envoi en cours...' : 'Soumettre'}
+                    {loading ? tr.sending : tr.submit}
                   </button>
                 </form>
               </div>
@@ -266,10 +303,10 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
-                    <p className="text-[#2a2a2a] text-xs font-medium mb-0.5">Merci, {guest.firstName} !</p>
-                    <p className="text-[#9a8a6a] text-[10px] mb-2">Votre réponse a été envoyée.</p>
+                    <p className="text-[#2a2a2a] text-xs font-medium mb-0.5">{tr.thankYou}, {guest.firstName} !</p>
+                    <p className="text-[#9a8a6a] text-[10px] mb-2">{tr.responseSent}</p>
                     <div className="bg-[#c9a84c]/10 rounded-lg px-3 py-2 mb-2">
-                      <p className="text-[#6a6a5a] text-[10px] uppercase tracking-wider font-medium">✓ Je serai présent(e)</p>
+                      <p className="text-[#6a6a5a] text-[10px] uppercase tracking-wider font-medium">✓ {tr.willAttend}</p>
                     </div>
                     {guest.rsvpMessage && (
                       <div className="bg-[#f5f3f0] rounded px-3 py-2 mb-2">
@@ -282,10 +319,10 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
                     <div className="w-8 h-8 bg-[#8a7a5a]/10 rounded-full flex items-center justify-center mx-auto mb-2">
                       <span className="text-sm"></span>
                     </div>
-                    <p className="text-[#2a2a2a] text-xs font-medium mb-0.5">Merci pour votre réponse</p>
-                    <p className="text-[#9a8a6a] text-[10px] mb-2">Votre réponse a été envoyée.</p>
+                    <p className="text-[#2a2a2a] text-xs font-medium mb-0.5">{tr.thankYouResponse}</p>
+                    <p className="text-[#9a8a6a] text-[10px] mb-2">{tr.responseSent}</p>
                     <div className="bg-[#8a7a5a]/10 rounded-lg px-3 py-2 mb-2">
-                      <p className="text-[#6a6a5a] text-[10px] uppercase tracking-wider font-medium">✕ Je ne pourrai pas venir</p>
+                      <p className="text-[#6a6a5a] text-[10px] uppercase tracking-wider font-medium">✕ {tr.cannotAttend}</p>
                     </div>
                     {guest.rsvpMessage && (
                       <div className="bg-[#f5f3f0] rounded px-3 py-2 mb-2">
@@ -304,7 +341,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
                 onClick={handleDownloadPDF}
                 disabled={pdfLoading}
                 className="bg-white/80 hover:bg-white text-[#6a6a5a] p-2 rounded-full transition-all shadow disabled:opacity-60"
-                title="Télécharger l'invitation en PDF"
+                title={tr.download}
               >
                 {pdfLoading ? (
                   <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
@@ -336,12 +373,12 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
                 <div className="w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-2">
                   <span className="text-[#c9a84c] text-lg" style={{ fontFamily: "'Great Vibes', serif" }}>M</span>
                 </div>
-                <h2 className="text-[#c9a84c] text-[10px] uppercase tracking-[0.2em] font-medium mb-3">Cérémonie & Réception</h2>
+                <h2 className="text-[#c9a84c] text-[10px] uppercase tracking-[0.2em] font-medium mb-3">{tr.ceremonyReception}</h2>
               </div>
 
               <div className="space-y-3">
                 <div>
-                  <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">Date</p>
+                  <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">{tr.date}</p>
                   <p className="text-[#2a2a2a] text-sm font-medium" style={{ fontFamily: "'Georgia', serif" }}>
                     {dateInfo.weekday ? `${dateInfo.weekday} ${dateInfo.day} ${dateInfo.month} 2026` : info.date || '—'}
                   </p>
@@ -351,14 +388,14 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
 
                 {info.time && (
                   <div>
-                    <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">Cérémonie</p>
+                    <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">{tr.ceremony}</p>
                     <p className="text-[#2a2a2a] text-sm font-medium">{info.time}</p>
                   </div>
                 )}
 
                 {info.venueName && (
                   <div>
-                    <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">Lieu</p>
+                    <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">{tr.venue}</p>
                     <p className="text-[#2a2a2a] text-xs font-medium">{info.venueName}</p>
                     {info.venueAddress && (
                       <p className="text-[#2a2a2a] text-xs font-medium mt-0.5">{info.venueAddress}</p>
@@ -370,14 +407,14 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
 
                 {info.receptionTime && (
                   <div>
-                    <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">Réception</p>
+                    <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">{tr.reception}</p>
                     <p className="text-[#2a2a2a] text-sm font-medium">{info.receptionTime}</p>
                   </div>
                 )}
 
                 {info.receptionVenue && (
                   <div>
-                    <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">Lieu de la réception</p>
+                    <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">{tr.receptionVenue}</p>
                     <p className="text-[#2a2a2a] text-xs font-medium">{info.receptionVenue}</p>
                     {info.receptionAddress && (
                       <p className="text-[#2a2a2a] text-xs font-medium mt-0.5">{info.receptionAddress}</p>
@@ -389,8 +426,17 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
                   <>
                     <div className="w-12 h-px bg-[#c9a84c]/40 mx-auto" />
                     <div>
-                      <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">Code vestimentaire</p>
+                      <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">{tr.dressCode}</p>
                       <p className="text-[#2a2a2a] text-xs italic">{info.dressCode}</p>
+                    </div>
+                  </>
+                )}
+
+                {info.card2Text && (
+                  <>
+                    <div className="w-12 h-px bg-[#c9a84c]/40 mx-auto" />
+                    <div>
+                      <p className="text-[#2a2a2a] text-xs leading-relaxed whitespace-pre-line">{info.card2Text}</p>
                     </div>
                   </>
                 )}
