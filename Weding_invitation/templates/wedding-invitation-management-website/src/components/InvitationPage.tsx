@@ -199,10 +199,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
           />
 
           <div className="absolute inset-0 flex items-center justify-center z-20">
-            <div data-pdf-circle className="relative w-[320px] h-[320px] md:w-[360px] md:h-[360px] rounded-full flex items-center justify-center overflow-hidden" style={{ boxShadow: '0 0 0 4px rgba(201,168,76,0.1), 0 0 0 8px rgba(201,168,76,0.05)' }}>
-              {info.coupleImage && (
-                <img src={info.coupleImage} alt="" className="absolute inset-0 w-full h-full object-cover" />
-              )}
+            <div data-pdf-circle className="relative w-[320px] h-[320px] md:w-[360px] md:h-[360px] rounded-full flex items-center justify-center overflow-hidden" style={{ boxShadow: '0 0 0 4px rgba(201,168,76,0.1), 0 0 0 8px rgba(201,168,76,0.05)', ...(info.coupleImage ? { backgroundImage: `url(${info.coupleImage})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' } : {}) }}>
               <div className={`absolute inset-0 rounded-full ${info.coupleImage ? 'bg-gradient-to-b from-black/30 via-black/20 to-black/50' : ''}`} />
               
               <div className="relative z-10 text-center px-6 py-4 w-full">
