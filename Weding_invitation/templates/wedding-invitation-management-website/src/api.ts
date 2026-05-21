@@ -149,16 +149,14 @@ export async function apiGetWeddingInfo(): Promise<WeddingInfo> {
 }
 
 export async function apiSaveWeddingInfo(info: WeddingInfo, file?: File | null): Promise<WeddingInfo> {
-  if (file || (info.coupleImage === '' && ('coupleImage' in info))) {
+  if (file) {
     const formData = new FormData();
     Object.entries(info).forEach(([key, value]) => {
-      formData.append(key, value as string);
+      if (key !== 'removeCoupleImage') {
+        formData.append(key, value as string);
+      }
     });
-    if (file) {
-      formData.append('coupleImage', file);
-    } else {
-      formData.append('removeCoupleImage', '1');
-    }
+    formData.append('coupleImage', file);
     return apiFetch<WeddingInfo>('/wedding-info/', {
       method: 'PUT',
       body: formData,

@@ -419,17 +419,20 @@ def wedding_info_view(request):
     }
 
     for camel_key, snake_key in field_mapping.items():
-        if camel_key in data:
+        if camel_key in data and camel_key != 'coupleImage':
             setattr(info, snake_key, data[camel_key])
 
     # Gérer l'upload d'image (multipart)
-    if is_multipart:
-        if 'coupleImage' in request.FILES:
-            info.couple_image = request.FILES['coupleImage']
-        if 'removeCoupleImage' in data:
-            if info.couple_image:
-                info.couple_image.delete(save=False)
-            info.couple_image = None
+    if is_multipart and 'coupleImage' in request.FILES:
+        info.couple_image = request.FILES['coupleImage']
+
+    # Gérer la suppression d'image (JSON ou multipart)
+    if data.get('removeCoupleImage'):
+        if info.couple_image:
+            info.couple_image.delete(save=False)
+        info.couple_image = None
+
+    info.save()
 
     info.save()
 

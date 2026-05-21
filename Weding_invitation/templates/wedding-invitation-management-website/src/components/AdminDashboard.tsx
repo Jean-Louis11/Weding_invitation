@@ -553,7 +553,7 @@ export default function AdminDashboard({ onLogout }: Props) {
                         <input type="file" accept="image/*" onChange={e => setCoupleFile(e.target.files?.[0] || null)} className="flex-1 text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-[#b8860b]/10 file:text-[#b8860b] hover:file:bg-[#b8860b]/20 cursor-pointer" />
                       </div>
                       {(weddingInfo.coupleImage || coupleFile) && (
-                        <button type="button" onClick={() => { setCoupleFile(null); setWeddingInfo(prev => ({ ...prev, coupleImage: '' })); }} className="mt-1 text-[10px] text-red-500 hover:text-red-600">Supprimer la photo</button>
+                        <button type="button" onClick={() => { setCoupleFile(null); setWeddingInfo(prev => ({ ...prev, coupleImage: '', removeCoupleImage: true })); }} className="mt-1 text-[10px] text-red-500 hover:text-red-600">Supprimer la photo</button>
                       )}
                     </div>
                   </div>
