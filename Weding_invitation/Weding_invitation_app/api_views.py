@@ -379,7 +379,7 @@ def wedding_info_view(request):
             'groomName': '', 'brideName': '', 'date': '', 'time': '',
             'venueName': '', 'venueAddress': '', 'receptionTime': '',
             'receptionVenue': '', 'receptionAddress': '', 'dressCode': '', 'rsvpDeadline': '',
-            'lang': 'fr', 'card2Text': '', 'coupleImage': '',
+            'lang': 'fr', 'card2Text': '', 'card2TextEn': '', 'coupleImage': '',
         })
 
     # PUT — Vérifier l'authentification admin
@@ -408,6 +408,7 @@ def wedding_info_view(request):
         'rsvpDeadline': 'rsvp_deadline',
         'lang': 'lang',
         'card2Text': 'card2_text',
+        'card2TextEn': 'card2_text_en',
         'coupleImage': 'couple_image',
     }
 

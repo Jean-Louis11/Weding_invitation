@@ -24,6 +24,18 @@ function formatDate(dateStr: string, lang: string): { day: string; month: string
   };
 }
 
+function formatTime(timeStr: string, lang: string): string {
+  if (!timeStr) return '';
+  const [h, m] = timeStr.split(':').map(Number);
+  if (isNaN(h) || isNaN(m)) return timeStr;
+  if (lang === 'en') {
+    const period = h >= 12 ? 'PM' : 'AM';
+    const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+    return `${h12}:${String(m).padStart(2, '0')} ${period}`;
+  }
+  return `${h}h${String(m).padStart(2, '0')}`;
+}
+
 function t(lang: string): Record<string, string> {
   const isEn = lang === 'en';
   return {
@@ -61,7 +73,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
     groomName: '', brideName: '', date: '', time: '',
     venueName: '', venueAddress: '', receptionTime: '',
     receptionVenue: '', receptionAddress: '', dressCode: '', rsvpDeadline: '',
-    lang: 'fr', card2Text: '', coupleImage: '',
+    lang: 'fr', card2Text: '', card2TextEn: '', coupleImage: '',
   });
   const [rsvpStatus, setRsvpStatus] = useState<'confirmed' | 'declined'>('confirmed');
   const [rsvpMessage, setRsvpMessage] = useState('');
@@ -381,9 +393,9 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
               </div>
 
               <div className="space-y-3">
-                {info.card2Text && (
+                {(info.lang === 'en' ? info.card2TextEn : info.card2Text) && (
                   <div>
-                    <p className="text-[#2a2a2a] text-xs leading-relaxed whitespace-pre-line">{info.card2Text}</p>
+                    <p className="text-[#2a2a2a] text-xs leading-relaxed whitespace-pre-line">{info.lang === 'en' ? info.card2TextEn : info.card2Text}</p>
                   </div>
                 )}
 
@@ -399,7 +411,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
                 {info.time && (
                   <div>
                     <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">{tr.ceremony}</p>
-                    <p className="text-[#2a2a2a] text-sm font-medium">{info.time}</p>
+                    <p className="text-[#2a2a2a] text-sm font-medium">{formatTime(info.time, info.lang)}</p>
                   </div>
                 )}
 
@@ -418,7 +430,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
                 {info.receptionTime && (
                   <div>
                     <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">{tr.reception}</p>
-                    <p className="text-[#2a2a2a] text-sm font-medium">{info.receptionTime}</p>
+                    <p className="text-[#2a2a2a] text-sm font-medium">{formatTime(info.receptionTime, info.lang)}</p>
                   </div>
                 )}
 
