@@ -137,7 +137,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
 
   return (
     <div className="min-h-screen bg-[#f5f3f0] flex items-center justify-center p-4 md:p-8">
-      <div className="flex gap-6 overflow-x-auto pb-4 w-full max-w-6xl" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+      <div className="flex gap-6 overflow-x-auto pb-4 w-full max-w-6xl md:justify-center" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         {/* ===== CARD 1: Decorations.jpeg ===== */}
         <div ref={cardRef} className="relative w-full max-w-md flex-shrink-0" style={{ minHeight: '1000px' }}>
           <img
