@@ -152,7 +152,7 @@ export async function apiSaveWeddingInfo(info: WeddingInfo, file?: File | null):
   if (file) {
     const formData = new FormData();
     Object.entries(info).forEach(([key, value]) => {
-      if (key !== 'removeCoupleImage') {
+      if (key !== 'removeCoupleImage' && key !== 'coupleImage') {
         formData.append(key, value as string);
       }
     });
