@@ -226,7 +226,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
 
         {showRSVP && !submitted && (
           <div data-rsvp-section className="absolute bottom-8 left-4 right-4 z-30">
-            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4 border border-[#c9a84c]/30">
+            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4">
               <form onSubmit={handleSubmit} className="space-y-2">
                 <div>
                   <label className="block text-[#6a6a5a] text-[10px] uppercase tracking-wider mb-1">
@@ -285,7 +285,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
 
         {submitted && (
           <div data-rsvp-section className="absolute bottom-8 left-4 right-4 z-30">
-            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4 border border-[#c9a84c]/30 text-center">
+            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4 text-center">
               {guest.rsvpStatus === 'confirmed' ? (
                 <>
                   <div className="w-8 h-8 bg-[#c9a84c]/10 rounded-full flex items-center justify-center mx-auto mb-2">
