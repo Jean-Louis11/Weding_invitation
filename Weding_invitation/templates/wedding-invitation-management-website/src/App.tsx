@@ -4,9 +4,8 @@ import { apiGetGuestByToken, apiCheckAuth, apiLogin, apiLogout } from './api';
 import InvitationPage from './components/InvitationPage';
 import AdminLogin from './components/AdminLogin';
 import AdminDashboard from './components/AdminDashboard';
-import UnauthorizedPage from './components/UnauthorizedPage';
 
-type AppView = 'loading' | 'invitation' | 'unauthorized' | 'admin-login' | 'admin-dashboard';
+type AppView = 'loading' | 'invitation' | 'admin-login' | 'admin-dashboard';
 
 function getInviteToken(): string | null {
   const params = new URLSearchParams(window.location.search);
@@ -42,10 +41,10 @@ export default function App() {
           setGuest(response.guest);
           setView('invitation');
         } else {
-          setView('unauthorized');
+          setView('admin-login');
         }
       } else {
-        setView('unauthorized');
+        setView('admin-login');
       }
     };
 
@@ -89,5 +88,5 @@ export default function App() {
     return <AdminDashboard onLogout={handleAdminLogout} />;
   }
 
-  return <UnauthorizedPage />;
+  return <AdminLogin onLogin={handleAdminLogin} />;
 }
