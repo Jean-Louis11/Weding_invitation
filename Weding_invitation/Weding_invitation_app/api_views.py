@@ -266,6 +266,43 @@ def guests_list_create(request):
 
 
 @csrf_exempt
+@require_http_methods(["PUT"])
+@admin_required
+def guest_update(request, guest_id):
+    """
+    PUT /api/guests/<id>/
+    Modifie les informations d'un invité par son ID (admin requis).
+    """
+    try:
+        guest = Guest.objects.get(pk=guest_id)
+    except Guest.DoesNotExist:
+        return json_error("Invité non trouvé.", status=404)
+
+    data, error = parse_json_body(request)
+    if error:
+        return error
+
+    first_name = data.get('firstName', '').strip()
+    last_name = data.get('lastName', '').strip()
+    phone = data.get('phone', '').strip()
+
+    if not first_name or not last_name or not phone:
+        return json_error("Les champs firstName, lastName et phone sont obligatoires.")
+
+    guest.first_name = first_name
+    guest.last_name = last_name
+    guest.email = data.get('email', guest.email)
+    guest.phone = phone
+    guest.plus_one = data.get('plusOne', guest.plus_one)
+    guest.plus_one_name = data.get('plusOneName', guest.plus_one_name)
+    guest.number_of_guests = data.get('numberOfGuests', guest.number_of_guests)
+    guest.dietary_restrictions = data.get('dietaryRestrictions', guest.dietary_restrictions)
+    guest.save()
+
+    return JsonResponse(guest.to_dict())
+
+
+@csrf_exempt
 @require_http_methods(["DELETE"])
 @admin_required
 def guest_delete(request, guest_id):

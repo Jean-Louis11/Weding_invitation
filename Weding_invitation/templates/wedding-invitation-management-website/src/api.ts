@@ -108,8 +108,24 @@ export async function apiAddGuest(data: {
 }
 
 export async function apiDeleteGuest(id: string): Promise<void> {
-  await apiFetch<{ success: boolean }>(`/guests/${id}/`, {
+  await apiFetch<{ success: boolean }>(`/guests/delete/${id}/`, {
     method: 'DELETE',
+  });
+}
+
+export async function apiUpdateGuest(id: string, data: {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email?: string;
+  plusOne?: boolean;
+  plusOneName?: string;
+  numberOfGuests?: number;
+  dietaryRestrictions?: string;
+}): Promise<Guest> {
+  return apiFetch<Guest>(`/guests/${id}/`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
   });
 }
 

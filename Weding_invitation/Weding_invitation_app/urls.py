@@ -16,7 +16,8 @@ urlpatterns = [
 
     # ── Gestion des invités ──
     path('guests/', api_views.guests_list_create, name='guests-list-create'),
-    path('guests/<int:guest_id>/', api_views.guest_delete, name='guest-delete'),
+    path('guests/<int:guest_id>/', api_views.guest_update, name='guest-update'),
+    path('guests/delete/<int:guest_id>/', api_views.guest_delete, name='guest-delete'),
     path('guests/by-token/<str:token>/', api_views.guest_by_token, name='guest-by-token'),
 
     # ── RSVP ──

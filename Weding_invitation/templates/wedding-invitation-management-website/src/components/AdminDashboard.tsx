@@ -4,6 +4,7 @@ import {
   apiGetGuests,
   apiAddGuest,
   apiDeleteGuest,
+  apiUpdateGuest,
   generateInviteLink,
   apiGetWeddingInfo,
   apiSaveWeddingInfo,
@@ -42,6 +43,7 @@ export default function AdminDashboard({ onLogout }: Props) {
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | Guest['rsvpStatus']>('all');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState<Guest | null>(null);
   const [showDetailModal, setShowDetailModal] = useState<Guest | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -52,6 +54,13 @@ export default function AdminDashboard({ onLogout }: Props) {
   });
   const [formError, setFormError] = useState('');
   const [formLoading, setFormLoading] = useState(false);
+
+  // Edit guest form
+  const [editForm, setEditForm] = useState({
+    firstName: '', lastName: '', email: '', phone: '', plusOne: false, plusOneName: '', numberOfGuests: 1, dietaryRestrictions: '',
+  });
+  const [editFormError, setEditFormError] = useState('');
+  const [editFormLoading, setEditFormLoading] = useState(false);
 
   // Settings
   const [weddingInfo, setWeddingInfo] = useState<WeddingInfo>({
@@ -163,6 +172,40 @@ export default function AdminDashboard({ onLogout }: Props) {
     } finally {
       setFormLoading(false);
     }
+  };
+
+  const handleEditGuest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setEditFormError('');
+    if (!editForm.firstName || !editForm.lastName || !editForm.phone) {
+      setEditFormError('Prénom, nom et téléphone sont requis.');
+      return;
+    }
+    if (!showEditModal) return;
+    setEditFormLoading(true);
+    try {
+      await apiUpdateGuest(showEditModal.id, { ...editForm });
+      await refresh();
+      setShowEditModal(null);
+    } catch (err: any) {
+      setEditFormError(err?.message || 'Erreur lors de la modification de l\'invité.');
+    } finally {
+      setEditFormLoading(false);
+    }
+  };
+
+  const openEditModal = (guest: Guest) => {
+    setEditForm({
+      firstName: guest.firstName,
+      lastName: guest.lastName,
+      email: guest.email || '',
+      phone: guest.phone,
+      plusOne: guest.plusOne,
+      plusOneName: guest.plusOneName || '',
+      numberOfGuests: guest.numberOfGuests || 1,
+      dietaryRestrictions: guest.dietaryRestrictions || '',
+    });
+    setShowEditModal(guest);
   };
 
   const handleDelete = async (id: string) => {
@@ -486,6 +529,16 @@ export default function AdminDashboard({ onLogout }: Props) {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                   </svg>
                                 )}
+                              </button>
+                              {/* Edit */}
+                              <button
+                                onClick={() => openEditModal(guest)}
+                                title="Modifier"
+                                className="p-2 text-gray-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-colors"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
                               </button>
                               {/* View details */}
                               <button
@@ -954,6 +1007,97 @@ export default function AdminDashboard({ onLogout }: Props) {
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                     </svg>
                   ) : 'Ajouter l\'invité'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ===== EDIT GUEST MODAL ===== */}
+      {showEditModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div className="bg-gradient-to-r from-[#2d1f14] to-[#4a3728] px-6 py-4 flex items-center justify-between">
+              <h3 className="text-white font-medium">Modifier l'invité</h3>
+              <button onClick={() => { setShowEditModal(null); setEditFormError(''); }} className="text-white/60 hover:text-white">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <form onSubmit={handleEditGuest} className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Prénom *</label>
+                  <input
+                    type="text"
+                    value={editForm.firstName}
+                    onChange={e => setEditForm(f => ({ ...f, firstName: e.target.value }))}
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Nom *</label>
+                  <input
+                    type="text"
+                    value={editForm.lastName}
+                    onChange={e => setEditForm(f => ({ ...f, lastName: e.target.value }))}
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Téléphone *</label>
+                <input
+                  type="tel"
+                  value={editForm.phone}
+                  onChange={e => setEditForm(f => ({ ...f, phone: e.target.value }))}
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Email</label>
+                <input
+                  type="email"
+                  value={editForm.email}
+                  onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))}
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20"
+                />
+              </div>
+              <label className="flex items-center gap-3 cursor-pointer bg-gray-50 rounded-xl px-4 py-3 hover:bg-gray-100 transition-colors">
+                <input
+                  type="checkbox"
+                  checked={editForm.plusOne}
+                  onChange={e => setEditForm(f => ({ ...f, plusOne: e.target.checked }))}
+                  className="w-4 h-4 accent-[#b8860b] rounded"
+                />
+                <span className="text-sm text-gray-700">Autoriser un accompagnant (+1)</span>
+              </label>
+
+              {editFormError && (
+                <p className="text-red-500 text-xs bg-red-50 px-3 py-2 rounded-lg">{editFormError}</p>
+              )}
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => { setShowEditModal(null); setEditFormError(''); }}
+                  className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl font-medium text-sm hover:bg-gray-50 transition-colors"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  disabled={editFormLoading}
+                  className="flex-1 bg-gradient-to-r from-[#b8860b] to-[#d4a017] text-white py-2.5 rounded-xl font-medium text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                >
+                  {editFormLoading ? (
+                    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                    </svg>
+                  ) : 'Sauvegarder'}
                 </button>
               </div>
             </form>
