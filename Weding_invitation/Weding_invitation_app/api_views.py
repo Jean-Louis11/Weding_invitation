@@ -210,17 +210,17 @@ def guests_list_create(request):
     # Champs obligatoires
     first_name = data.get('firstName', '').strip()
     last_name = data.get('lastName', '').strip()
-    email = data.get('email', '').strip()
+    phone = data.get('phone', '').strip()
 
-    if not first_name or not last_name or not email:
-        return json_error("Les champs firstName, lastName et email sont obligatoires.")
+    if not first_name or not last_name or not phone:
+        return json_error("Les champs firstName, lastName et phone sont obligatoires.")
 
     # Créer l'invité avec les champs optionnels
     guest = Guest.objects.create(
         first_name=first_name,
         last_name=last_name,
-        email=email,
-        phone=data.get('phone', ''),
+        email=data.get('email', ''),
+        phone=phone,
         plus_one=data.get('plusOne', False),
         plus_one_name=data.get('plusOneName', ''),
         number_of_guests=data.get('numberOfGuests', 1),

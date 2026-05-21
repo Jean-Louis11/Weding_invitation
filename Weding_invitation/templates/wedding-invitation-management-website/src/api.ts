@@ -85,8 +85,8 @@ export async function apiGetGuests(): Promise<Guest[]> {
 export async function apiAddGuest(data: {
   firstName: string;
   lastName: string;
-  email: string;
-  phone?: string;
+  phone: string;
+  email?: string;
   plusOne?: boolean;
 }): Promise<Guest> {
   return apiFetch<Guest>('/guests/', {

@@ -27,8 +27,8 @@ class Guest(models.Model):
 
     first_name = models.CharField(max_length=100, verbose_name="Prénom")
     last_name = models.CharField(max_length=100, verbose_name="Nom")
-    email = models.EmailField(verbose_name="Email")
-    phone = models.CharField(max_length=20, blank=True, default='', verbose_name="Téléphone")
+    email = models.EmailField(blank=True, default='', verbose_name="Email")
+    phone = models.CharField(max_length=20, verbose_name="Téléphone")
     token = models.CharField(
         max_length=50, unique=True, default=generate_token, verbose_name="Token d'invitation"
     )
