@@ -415,15 +415,14 @@ def wedding_info_view(request):
         'lang': 'lang',
         'card2Text': 'card2_text',
         'card2TextEn': 'card2_text_en',
-        'coupleImage': 'couple_image',
     }
 
     for camel_key, snake_key in field_mapping.items():
-        if camel_key in data and camel_key != 'coupleImage':
+        if camel_key in data:
             setattr(info, snake_key, data[camel_key])
 
     # Gérer l'upload d'image (multipart)
-    if is_multipart and 'coupleImage' in request.FILES:
+    if request.FILES.get('coupleImage'):
         info.couple_image = request.FILES['coupleImage']
 
     # Gérer la suppression d'image (JSON ou multipart)
@@ -431,8 +430,6 @@ def wedding_info_view(request):
         if info.couple_image:
             info.couple_image.delete(save=False)
         info.couple_image = None
-
-    info.save()
 
     info.save()
 
