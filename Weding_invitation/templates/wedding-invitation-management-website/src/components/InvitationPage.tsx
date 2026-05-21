@@ -359,16 +359,6 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
             crossOrigin="anonymous"
           />
         </div>
-
-        {/* ===== CARD 3: Decorations right.jpeg ===== */}
-        <div className="relative w-full max-w-md flex-shrink-0" style={{ minHeight: '800px' }}>
-          <img
-            src="/static/images/Decorations right.jpeg"
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover pointer-events-none z-0"
-            crossOrigin="anonymous"
-          />
-        </div>
       </div>
     </div>
   );
