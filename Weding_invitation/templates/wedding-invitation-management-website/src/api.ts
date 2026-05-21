@@ -15,11 +15,12 @@ async function apiFetch<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
+  const isFormData = options.body instanceof FormData;
   const res = await fetch(`${API_BASE}${endpoint}`, {
     ...options,
     credentials: 'include',
     headers: {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...options.headers,
     },
   });
@@ -147,7 +148,22 @@ export async function apiGetWeddingInfo(): Promise<WeddingInfo> {
   return apiFetch<WeddingInfo>('/wedding-info/');
 }
 
-export async function apiSaveWeddingInfo(info: WeddingInfo): Promise<WeddingInfo> {
+export async function apiSaveWeddingInfo(info: WeddingInfo, file?: File | null): Promise<WeddingInfo> {
+  if (file || (info.coupleImage === '' && ('coupleImage' in info))) {
+    const formData = new FormData();
+    Object.entries(info).forEach(([key, value]) => {
+      formData.append(key, value as string);
+    });
+    if (file) {
+      formData.append('coupleImage', file);
+    } else {
+      formData.append('removeCoupleImage', '1');
+    }
+    return apiFetch<WeddingInfo>('/wedding-info/', {
+      method: 'PUT',
+      body: formData,
+    });
+  }
   return apiFetch<WeddingInfo>('/wedding-info/', {
     method: 'PUT',
     body: JSON.stringify(info),

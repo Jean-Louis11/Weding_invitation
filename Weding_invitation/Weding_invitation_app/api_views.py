@@ -386,13 +386,19 @@ def wedding_info_view(request):
     if not request.user.is_authenticated or not request.user.is_staff:
         return json_error("Authentification requise.", status=401)
 
-    data, error = parse_json_body(request)
-    if error:
-        return error
-
     info = get_wedding_info()
     if not info:
         info = WeddingInfo.objects.create(pk=1)
+
+    # Gestion multipart/form-data (pour upload d'image) et JSON
+    is_multipart = request.content_type and 'multipart/form-data' in request.content_type
+    if is_multipart:
+        data = request.POST.dict()
+    else:
+        try:
+            data = json.loads(request.body)
+        except (json.JSONDecodeError, ValueError):
+            return json_error("Corps de requête invalide.")
 
     field_mapping = {
         'groomName': 'groom_name',
@@ -415,6 +421,15 @@ def wedding_info_view(request):
     for camel_key, snake_key in field_mapping.items():
         if camel_key in data:
             setattr(info, snake_key, data[camel_key])
+
+    # Gérer l'upload d'image (multipart)
+    if is_multipart:
+        if 'coupleImage' in request.FILES:
+            info.couple_image = request.FILES['coupleImage']
+        if 'removeCoupleImage' in data:
+            if info.couple_image:
+                info.couple_image.delete(save=False)
+            info.couple_image = None
 
     info.save()
 

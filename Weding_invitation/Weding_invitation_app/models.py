@@ -98,7 +98,7 @@ class WeddingInfo(models.Model):
     lang = models.CharField(max_length=2, choices=[('fr', 'Français'), ('en', 'English')], default='fr', verbose_name="Langue")
     card2_text = models.TextField(blank=True, default='', verbose_name="Texte carte 2 (FR)")
     card2_text_en = models.TextField(blank=True, default='', verbose_name="Texte carte 2 (EN)")
-    couple_image = models.URLField(blank=True, default='', max_length=500, verbose_name="URL photo des mariés")
+    couple_image = models.ImageField(upload_to='couple/', blank=True, verbose_name="Photo des mariés")
 
     class Meta:
         verbose_name = "Information du mariage"
@@ -127,5 +127,5 @@ class WeddingInfo(models.Model):
             'lang': self.lang,
             'card2Text': self.card2_text,
             'card2TextEn': self.card2_text_en,
-            'coupleImage': self.couple_image,
+            'coupleImage': self.couple_image.url if self.couple_image else '',
         }
