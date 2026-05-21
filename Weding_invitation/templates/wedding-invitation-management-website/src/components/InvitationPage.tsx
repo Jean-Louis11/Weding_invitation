@@ -390,7 +390,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
                     <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">Lieu</p>
                     <p className="text-[#2a2a2a] text-xs font-medium">{info.venueName}</p>
                     {info.venueAddress && (
-                      <p className="text-[#9a8a6a] text-[9px] mt-0.5">{info.venueAddress}</p>
+                      <p className="text-[#2a2a2a] text-xs font-medium mt-0.5">{info.venueAddress}</p>
                     )}
                   </div>
                 )}
@@ -409,7 +409,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
                     <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">Lieu de la réception</p>
                     <p className="text-[#2a2a2a] text-xs font-medium">{info.receptionVenue}</p>
                     {info.receptionAddress && (
-                      <p className="text-[#9a8a6a] text-[9px] mt-0.5">{info.receptionAddress}</p>
+                      <p className="text-[#2a2a2a] text-xs font-medium mt-0.5">{info.receptionAddress}</p>
                     )}
                   </div>
                 )}
