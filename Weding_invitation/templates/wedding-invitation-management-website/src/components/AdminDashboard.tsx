@@ -509,40 +509,88 @@ export default function AdminDashboard({ onLogout }: Props) {
 
         {/* ===== SETTINGS TAB ===== */}
         {tab === 'settings' && (
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Wedding info */}
+          <div className="space-y-6">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
                 <span>💍</span> Informations du mariage
               </h2>
-              <form onSubmit={handleSaveSettings} className="space-y-4">
-                {[
-                  { key: 'groomName', label: 'Prénom du marié', type: 'text' },
-                  { key: 'brideName', label: 'Prénom de la mariée', type: 'text' },
-                  { key: 'date', label: 'Date de la cérémonie', type: 'date' },
-                  { key: 'time', label: 'Heure de la cérémonie', type: 'time' },
-                  { key: 'venueName', label: 'Nom du lieu', type: 'text' },
-                  { key: 'venueAddress', label: 'Adresse du lieu', type: 'text' },
-                  { key: 'receptionTime', label: 'Heure de la réception', type: 'time' },
-                  { key: 'receptionVenue', label: 'Lieu de la réception', type: 'text' },
-                  { key: 'receptionAddress', label: 'Adresse de la réception', type: 'text' },
-                  { key: 'dressCode', label: 'Code vestimentaire', type: 'text' },
-                  { key: 'rsvpDeadline', label: 'Date limite de réponse', type: 'date' },
-                ].map(field => (
-                  <div key={field.key}>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">{field.label}</label>
-                    <input
-                      type={field.type}
-                      value={(weddingInfo as any)[field.key]}
-                      onChange={e => setWeddingInfo(prev => ({ ...prev, [field.key]: e.target.value }))}
-                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800"
-                    />
+              <form onSubmit={handleSaveSettings}>
+                {/* Les mariés */}
+                <div className="mb-6">
+                  <h3 className="text-sm font-semibold text-[#b8860b] uppercase tracking-wider mb-3 pb-2 border-b border-[#b8860b]/20">Les mariés</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Prénom du marié</label>
+                      <input type="text" value={weddingInfo.groomName} onChange={e => setWeddingInfo(prev => ({ ...prev, groomName: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Prénom de la mariée</label>
+                      <input type="text" value={weddingInfo.brideName} onChange={e => setWeddingInfo(prev => ({ ...prev, brideName: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Code vestimentaire</label>
+                      <input type="text" value={weddingInfo.dressCode} onChange={e => setWeddingInfo(prev => ({ ...prev, dressCode: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800" />
+                    </div>
                   </div>
-                ))}
+                </div>
+
+                {/* Cérémonie */}
+                <div className="mb-6">
+                  <h3 className="text-sm font-semibold text-[#b8860b] uppercase tracking-wider mb-3 pb-2 border-b border-[#b8860b]/20">Cérémonie</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Date de la cérémonie</label>
+                      <input type="date" value={weddingInfo.date} onChange={e => setWeddingInfo(prev => ({ ...prev, date: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Heure de la cérémonie</label>
+                      <input type="time" value={weddingInfo.time} onChange={e => setWeddingInfo(prev => ({ ...prev, time: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Nom du lieu</label>
+                      <input type="text" value={weddingInfo.venueName} onChange={e => setWeddingInfo(prev => ({ ...prev, venueName: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Adresse de la cérémonie */}
+                <div className="mb-6">
+                  <h3 className="text-sm font-semibold text-[#b8860b] uppercase tracking-wider mb-3 pb-2 border-b border-[#b8860b]/20">Adresse de la cérémonie</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Adresse du lieu</label>
+                      <input type="text" value={weddingInfo.venueAddress} onChange={e => setWeddingInfo(prev => ({ ...prev, venueAddress: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Heure de la réception</label>
+                      <input type="time" value={weddingInfo.receptionTime} onChange={e => setWeddingInfo(prev => ({ ...prev, receptionTime: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Lieu de la réception</label>
+                      <input type="text" value={weddingInfo.receptionVenue} onChange={e => setWeddingInfo(prev => ({ ...prev, receptionVenue: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Réception & RSVP */}
+                <div className="mb-6">
+                  <h3 className="text-sm font-semibold text-[#b8860b] uppercase tracking-wider mb-3 pb-2 border-b border-[#b8860b]/20">Réception & RSVP</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Adresse de la réception</label>
+                      <input type="text" value={weddingInfo.receptionAddress} onChange={e => setWeddingInfo(prev => ({ ...prev, receptionAddress: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Date limite de réponse</label>
+                      <input type="date" value={weddingInfo.rsvpDeadline} onChange={e => setWeddingInfo(prev => ({ ...prev, rsvpDeadline: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800" />
+                    </div>
+                  </div>
+                </div>
+
                 <button
                   type="submit"
                   disabled={settingsLoading}
-                  className="w-full bg-[#b8860b] hover:bg-[#a07709] text-white py-3 rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto bg-[#b8860b] hover:bg-[#a07709] text-white py-3 px-8 rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
                 >
                   {settingsSaved ? (
                     <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg> Sauvegardé !</>
