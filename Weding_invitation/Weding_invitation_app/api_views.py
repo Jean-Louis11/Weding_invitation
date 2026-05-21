@@ -390,10 +390,15 @@ def wedding_info_view(request):
     if not info:
         info = WeddingInfo.objects.create(pk=1)
 
-    # Gestion multipart/form-data (pour upload d'image) et JSON
+    # Gestion JSON vs multipart/form-data
     is_multipart = request.content_type and 'multipart/form-data' in request.content_type
+    
     if is_multipart:
         data = request.POST.dict()
+        # Vérifier si un fichier a été uploadé
+        uploaded_file = request.FILES.get('coupleImage')
+        if uploaded_file:
+            info.couple_image = uploaded_file
     else:
         try:
             data = json.loads(request.body)
@@ -420,10 +425,6 @@ def wedding_info_view(request):
     for camel_key, snake_key in field_mapping.items():
         if camel_key in data:
             setattr(info, snake_key, data[camel_key])
-
-    # Gérer l'upload d'image (multipart)
-    if request.FILES.get('coupleImage'):
-        info.couple_image = request.FILES['coupleImage']
 
     # Gérer la suppression d'image (JSON ou multipart)
     if data.get('removeCoupleImage'):
