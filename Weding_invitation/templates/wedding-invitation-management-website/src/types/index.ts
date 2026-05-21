@@ -29,4 +29,5 @@ export interface WeddingInfo {
   rsvpDeadline: string;
   lang: string;
   card2Text: string;
+  coupleImage: string;
 }

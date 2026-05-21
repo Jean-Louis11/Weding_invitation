@@ -61,7 +61,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
     groomName: '', brideName: '', date: '', time: '',
     venueName: '', venueAddress: '', receptionTime: '',
     receptionVenue: '', receptionAddress: '', dressCode: '', rsvpDeadline: '',
-    lang: 'fr', card2Text: '',
+    lang: 'fr', card2Text: '', coupleImage: '',
   });
   const [rsvpStatus, setRsvpStatus] = useState<'confirmed' | 'declined'>('confirmed');
   const [rsvpMessage, setRsvpMessage] = useState('');
@@ -192,8 +192,12 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
               
               <div className="relative z-10 text-center px-6 py-4 w-full">
                 <div className="mb-2">
-                  <div className="w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-1">
-                    <span className="text-[#c9a84c] text-sm" style={{ fontFamily: "'Great Vibes', serif" }}>M</span>
+                  <div className="w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-1 overflow-hidden">
+                    {info.coupleImage ? (
+                      <img src={info.coupleImage} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-[#c9a84c] text-sm" style={{ fontFamily: "'Great Vibes', serif" }}>M</span>
+                    )}
                   </div>
                   <p className="text-[#9a8a6a] text-[8px] uppercase tracking-[0.15em] font-light leading-tight">
                     {tr.invited.split('\n').map((line, i) => <>{i > 0 && <br />}{line}</>)}

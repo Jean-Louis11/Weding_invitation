@@ -58,7 +58,7 @@ export default function AdminDashboard({ onLogout }: Props) {
     groomName: '', brideName: '', date: '', time: '',
     venueName: '', venueAddress: '', receptionTime: '',
     receptionVenue: '', receptionAddress: '', dressCode: '', rsvpDeadline: '',
-    lang: 'fr', card2Text: '',
+    lang: 'fr', card2Text: '', coupleImage: '',
   });
   const [settingsSaved, setSettingsSaved] = useState(false);
   const [settingsLoading, setSettingsLoading] = useState(false);
@@ -539,8 +539,8 @@ export default function AdminDashboard({ onLogout }: Props) {
                       <input type="text" value={weddingInfo.brideName} onChange={e => setWeddingInfo(prev => ({ ...prev, brideName: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800" />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Code vestimentaire</label>
-                      <input type="text" value={weddingInfo.dressCode} onChange={e => setWeddingInfo(prev => ({ ...prev, dressCode: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800" />
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Photo des mariés (URL)</label>
+                      <input type="url" value={weddingInfo.coupleImage} onChange={e => setWeddingInfo(prev => ({ ...prev, coupleImage: e.target.value }))} placeholder="https://..." className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800" />
                     </div>
                   </div>
                 </div>
@@ -587,6 +587,10 @@ export default function AdminDashboard({ onLogout }: Props) {
                 <div className="mb-6">
                   <h3 className="text-sm font-semibold text-[#b8860b] uppercase tracking-wider mb-3 pb-2 border-b border-[#b8860b]/20">Réception & RSVP</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Code vestimentaire</label>
+                      <input type="text" value={weddingInfo.dressCode} onChange={e => setWeddingInfo(prev => ({ ...prev, dressCode: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800" />
+                    </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-600 mb-1">Adresse de la réception</label>
                       <input type="text" value={weddingInfo.receptionAddress} onChange={e => setWeddingInfo(prev => ({ ...prev, receptionAddress: e.target.value }))} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800" />

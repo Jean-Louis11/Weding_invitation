@@ -379,7 +379,7 @@ def wedding_info_view(request):
             'groomName': '', 'brideName': '', 'date': '', 'time': '',
             'venueName': '', 'venueAddress': '', 'receptionTime': '',
             'receptionVenue': '', 'receptionAddress': '', 'dressCode': '', 'rsvpDeadline': '',
-            'lang': 'fr', 'card2Text': '',
+            'lang': 'fr', 'card2Text': '', 'coupleImage': '',
         })
 
     # PUT — Vérifier l'authentification admin
@@ -408,6 +408,7 @@ def wedding_info_view(request):
         'rsvpDeadline': 'rsvp_deadline',
         'lang': 'lang',
         'card2Text': 'card2_text',
+        'coupleImage': 'couple_image',
     }
 
     for camel_key, snake_key in field_mapping.items():

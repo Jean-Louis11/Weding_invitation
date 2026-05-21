@@ -97,6 +97,7 @@ class WeddingInfo(models.Model):
     rsvp_deadline = models.CharField(max_length=50, verbose_name="Date limite RSVP")
     lang = models.CharField(max_length=2, choices=[('fr', 'Français'), ('en', 'English')], default='fr', verbose_name="Langue")
     card2_text = models.TextField(blank=True, default='', verbose_name="Texte carte 2")
+    couple_image = models.URLField(blank=True, default='', max_length=500, verbose_name="URL photo des mariés")
 
     class Meta:
         verbose_name = "Information du mariage"
@@ -124,4 +125,5 @@ class WeddingInfo(models.Model):
             'rsvpDeadline': self.rsvp_deadline,
             'lang': self.lang,
             'card2Text': self.card2_text,
+            'coupleImage': self.couple_image,
         }
