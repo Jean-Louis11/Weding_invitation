@@ -1,44 +1,41 @@
 # Python
+*.pyc
+*.pyo
+*.pyd
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+# dist/ (Frontend build - tracké pour déploiement PythonAnywhere)
+build/
 
 # Virtual Environment
 venv/
 env/
 ENV/
-.venv/
 
 # Django
-*.log
-local_settings.py
 db.sqlite3
 db.sqlite3-journal
-media/
-staticfiles/
-
-# Environment variables
+/media/
+/staticfiles/
+/static/
+!/static/images/Decorations.JPEG
 .env
 .env.local
-.env.*.local
+.env.production
+
+# Node.js / React
+# node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vite
+.vite/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
 
 # IDE
 .vscode/
@@ -47,29 +44,8 @@ staticfiles/
 *.swo
 *~
 
-# OS
-.DS_Store
-Thumbs.db
-
-# Node.js (frontend)
-# node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-package-lock.json
-
-# Build output
-dist/
-
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-tox.ini
-
-# Misc
-*.bak
-*.tmp
+# Build output (Uncomment if you build on the server)
+# templates/react_build/index.html
 
 # Django Migrations
 **/migrations/*.py
