@@ -104,6 +104,29 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
     }
   }, [guest]);
 
+  useEffect(() => {
+    if (info.groomName && info.brideName) {
+      const title = `Mariage de ${info.groomName} & ${info.brideName}`;
+      document.title = title;
+
+      const setMeta = (selector: string, content: string) => {
+        const el = document.querySelector(selector) as HTMLMetaElement | null;
+        if (el) el.content = content;
+      };
+
+      setMeta('meta[property="og:title"]', title);
+      setMeta('meta[name="twitter:title"]', title);
+      setMeta('meta[property="og:description"]', `Vous êtes invité(e) au mariage de ${info.groomName} & ${info.brideName}`);
+      setMeta('meta[name="twitter:description"]', `Vous êtes invité(e) au mariage de ${info.groomName} & ${info.brideName}`);
+
+      if (info.coupleImage) {
+        const imgUrl = info.coupleImage.startsWith('http') ? info.coupleImage : `${window.location.origin}${info.coupleImage}`;
+        setMeta('meta[property="og:image"]', imgUrl);
+        setMeta('meta[name="twitter:image"]', imgUrl);
+      }
+    }
+  }, [info]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
