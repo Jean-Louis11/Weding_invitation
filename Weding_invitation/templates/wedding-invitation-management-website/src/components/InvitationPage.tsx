@@ -82,8 +82,12 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
   const [showRSVP, setShowRSVP] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const card2Ref = useRef<HTMLDivElement>(null);
 
-  const deadlinePassed = info.rsvpDeadline ? new Date(info.rsvpDeadline) < new Date() : false;
+  const deadlinePassed = info.rsvpDeadline ? (() => {
+    const deadline = new Date(info.rsvpDeadline);
+    return !isNaN(deadline.getTime()) && deadline < new Date();
+  })() : false;
 
   useEffect(() => {
     const loadInfo = async () => {
@@ -120,11 +124,11 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
   };
 
   const handleDownloadPDF = async () => {
-    if (!cardRef.current) return;
+    if (!cardRef.current || !card2Ref.current) return;
     setPdfLoading(true);
     try {
       await document.fonts.ready;
-      
+
       const rsvpSection = cardRef.current.querySelector('[data-rsvp-section]');
       const footerSection = cardRef.current.querySelector('[data-footer-section]');
       const pdfCircleOuter = cardRef.current.querySelector('[data-pdf-circle]');
@@ -137,13 +141,132 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
       }
       if (pdfCircleInner) (pdfCircleInner as HTMLElement).style.display = 'none';
 
-      const canvas = await html2canvas(cardRef.current, {
-        scale: 3,
+      const oklabToRgb = (oklab: string): string => {
+        const match = oklab.match(/oklab\((.+?)\)/);
+        if (!match) return oklab;
+        const inner = match[1].trim();
+        const slashIdx = inner.indexOf('/');
+        let colorPart: string;
+        let alpha = 1;
+        if (slashIdx > -1) {
+          colorPart = inner.substring(0, slashIdx).trim();
+          alpha = parseFloat(inner.substring(slashIdx + 1).trim());
+        } else {
+          colorPart = inner;
+        }
+        const parts = colorPart.split(/\s+/);
+        const l = parseFloat(parts[0]);
+        const a = parseFloat(parts[1]);
+        const b = parseFloat(parts[2]);
+        if (isNaN(l) || isNaN(a) || isNaN(b)) return oklab;
+        const l_ = l + 0.3963377774 * a + 0.2158037573 * b;
+        const m_ = l - 0.1055613458 * a - 0.0638541728 * b;
+        const s_ = l - 0.0894841775 * a - 1.2914855480 * b;
+        const l_c = l_ * l_ * l_;
+        const m_c = m_ * m_ * m_;
+        const s_c = s_ * s_ * s_;
+        const r = 3.240969941904521 * l_c - 1.537383177570093 * m_c - 0.4986107602930033 * s_c;
+        const g = -0.9692436362808798 * l_c + 1.875967501507720 * m_c + 0.0415550574071756 * s_c;
+        const bl = 0.0556300796969936 * l_c - 0.2039769588889766 * m_c + 1.0569715142428786 * s_c;
+        const clamp = (v: number) => Math.max(0, Math.min(1, v));
+        const to8 = (v: number) => Math.round(clamp(v) * 255);
+        if (isNaN(alpha) || alpha >= 1) return `rgb(${to8(r)},${to8(g)},${to8(bl)})`;
+        return `rgba(${to8(r)},${to8(g)},${to8(bl)},${alpha.toFixed(2)})`;
+      };
+
+      const oklchToRgb = (oklch: string): string => {
+        const match = oklch.match(/oklch\((.+?)\)/);
+        if (!match) return oklch;
+        const inner = match[1].trim();
+        const slashIdx = inner.indexOf('/');
+        let colorPart: string;
+        let alpha = 1;
+        if (slashIdx > -1) {
+          colorPart = inner.substring(0, slashIdx).trim();
+          alpha = parseFloat(inner.substring(slashIdx + 1).trim());
+        } else {
+          colorPart = inner;
+        }
+        const parts = colorPart.split(/\s+/);
+        const l = parseFloat(parts[0]);
+        const c = parseFloat(parts[1]);
+        const h = parseFloat(parts[2]);
+        if (isNaN(l) || isNaN(c) || isNaN(h)) return oklch;
+        const hRad = (h * Math.PI) / 180;
+        const a = c * Math.cos(hRad);
+        const b = c * Math.sin(hRad);
+        return oklabToRgb(`oklab(${l} ${a} ${b}${alpha < 1 ? ` / ${alpha}` : ''})`);
+      };
+
+      const convertColor = (val: string): string => {
+        if (val.includes('oklch')) return oklchToRgb(val);
+        if (val.includes('oklab')) return oklabToRgb(val);
+        return val;
+      };
+
+      const cloneWithAllStyles = (original: HTMLElement): HTMLElement => {
+        const clone = original.cloneNode(true) as HTMLElement;
+        const originals: HTMLElement[] = [original, ...Array.from(original.querySelectorAll('*')) as HTMLElement[]];
+        const clones: HTMLElement[] = [clone, ...Array.from(clone.querySelectorAll('*')) as HTMLElement[]];
+
+        originals.forEach((orig, i) => {
+          const cloneEl = clones[i];
+          const cs = window.getComputedStyle(orig);
+          const s = cloneEl.style;
+
+          for (let j = 0; j < cs.length; j++) {
+            const prop = cs[j];
+            const val = cs.getPropertyValue(prop);
+            if (val) s.setProperty(prop, convertColor(val));
+          }
+        });
+
+        return clone;
+      };
+
+      const container = document.createElement('div');
+      container.style.position = 'fixed';
+      container.style.left = '-10000px';
+      container.style.top = '0';
+      container.style.zIndex = '-1';
+      container.style.pointerEvents = 'none';
+      container.style.background = '#f5f3f0';
+      container.style.display = 'flex';
+      container.style.flexDirection = 'row';
+      container.style.gap = '30px';
+      container.style.alignItems = 'center';
+      container.style.padding = '40px 20px';
+      document.body.appendChild(container);
+
+      const card1Clone = cloneWithAllStyles(cardRef.current);
+      const card2Clone = cloneWithAllStyles(card2Ref.current);
+
+      [card1Clone, card2Clone].forEach(c => {
+        c.style.position = 'relative';
+        c.style.width = '500px';
+        c.style.minHeight = '1000px';
+        c.style.margin = '0';
+      });
+
+      const rsvp1 = card1Clone.querySelector('[data-rsvp-section]');
+      const footer1 = card1Clone.querySelector('[data-footer-section]');
+      if (rsvp1) (rsvp1 as HTMLElement).style.display = 'none';
+      if (footer1) (footer1 as HTMLElement).style.display = 'none';
+
+      container.appendChild(card1Clone);
+      container.appendChild(card2Clone);
+
+      await new Promise(r => setTimeout(r, 500));
+
+      const canvas = await html2canvas(container, {
+        scale: 2,
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#f5f3f0',
         logging: false,
       });
+
+      document.body.removeChild(container);
 
       if (rsvpSection) (rsvpSection as HTMLElement).style.display = '';
       if (footerSection) (footerSection as HTMLElement).style.display = '';
@@ -155,13 +278,18 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
 
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({
-        orientation: 'portrait',
+        orientation: 'landscape',
         unit: 'mm',
-        format: [105, 148],
+        format: 'a4',
       });
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      const ratio = Math.min(pdfWidth / canvas.width, pdfHeight / canvas.height);
+      const imgW = canvas.width * ratio;
+      const imgH = canvas.height * ratio;
+      const x = (pdfWidth - imgW) / 2;
+      const y = (pdfHeight - imgH) / 2;
+      pdf.addImage(imgData, 'PNG', x, y, imgW, imgH);
       pdf.save(`invitation-${guest.firstName}-${guest.lastName}.pdf`);
     } catch (err) {
       console.error('Failed to generate PDF:', err);
@@ -187,8 +315,8 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
   const tr = t(info.lang);
 
   return (
-    <div className="min-h-screen bg-[#f5f3f0] flex items-center justify-center p-4 md:p-8">
-      <div className="flex gap-6 overflow-x-auto pb-4 w-full max-w-6xl md:justify-center" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+    <div className="min-h-screen bg-[#f5f3f0] flex items-start justify-center p-4 md:p-8">
+      <div className="flex flex-col md:flex-row gap-6 pb-4 w-full max-w-6xl md:justify-center md:items-center">
         {/* ===== CARD 1: Decorations.jpeg ===== */}
         <div ref={cardRef} className="relative w-full max-w-md flex-shrink-0" style={{ minHeight: '1000px' }}>
           <img
@@ -208,6 +336,10 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
               
               <div className="relative z-10 text-center px-6 py-4 w-full">
                 <p className={`text-[8px] uppercase tracking-[0.15em] font-light leading-tight ${info.coupleImage ? 'text-white/80' : 'text-[#9a8a6a]'}`}>
+                  {guest.firstName} {guest.lastName}
+                </p>
+
+                <p className={`text-[8px] uppercase tracking-[0.15em] font-light leading-tight ${info.coupleImage ? 'text-white/80' : 'text-[#9a8a6a]'}`}>
                   {tr.invited.split('\n').map((line, i) => <>{i > 0 && <br />}{line}</>)}
                 </p>
 
@@ -221,15 +353,11 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
                   </h1>
                 </div>
 
-                <div className="mb-1.5">
+                <div className="mb-1.5 mt-8">
                   <p className={`text-[8px] uppercase tracking-[0.15em] ${info.coupleImage ? 'text-white/80' : 'text-[#c9a84c]'}`}>
                     {guest.plusOne ? tr.couple : tr.individual}
                   </p>
                 </div>
-
-                <p className={`text-xs italic ${info.coupleImage ? 'text-white/80' : 'text-[#9a8a6a]'}`} style={{ fontFamily: "'Great Vibes', serif" }}>
-                  {tr.receptionToFollow}
-                </p>
               </div>
             </div>
           </div>
@@ -347,30 +475,28 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
           )}
 
           <div data-footer-section className="absolute bottom-4 left-0 right-0 flex justify-center z-30">
-            <div className="flex gap-2">
-              <button
-                onClick={handleDownloadPDF}
-                disabled={pdfLoading}
-                className="bg-white/80 hover:bg-white text-[#6a6a5a] p-2 rounded-full transition-all shadow disabled:opacity-60"
-                title={tr.download}
-              >
-                {pdfLoading ? (
-                  <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                  </svg>
-                ) : (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                )}
-              </button>
-            </div>
+            <button
+              onClick={handleDownloadPDF}
+              disabled={pdfLoading}
+              className="bg-white/90 hover:bg-white text-[#6a6a5a] px-4 py-2 rounded-full text-[10px] tracking-[0.1em] uppercase font-medium transition-all shadow disabled:opacity-60 flex items-center gap-2"
+            >
+              {pdfLoading ? (
+                <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              )}
+              {tr.download}
+            </button>
           </div>
         </div>
 
         {/* ===== CARD 2: Decorations middle.jpeg ===== */}
-        <div className="relative w-full max-w-md flex-shrink-0" style={{ minHeight: '900px' }}>
+        <div ref={card2Ref} className="relative w-full max-w-md flex-shrink-0" style={{ minHeight: '1000px' }}>
           <img
             src="/static/images/Decorations middle.jpeg"
             alt=""
