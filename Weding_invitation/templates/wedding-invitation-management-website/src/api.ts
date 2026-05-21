@@ -149,3 +149,38 @@ export function generateInviteLink(token: string): string {
   const base = window.location.origin + window.location.pathname;
   return `${base}?invite=${token}`;
 }
+
+// ─── Users ───────────────────────────────────────────────────────────
+
+export interface AdminUser {
+  id: number;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  dateJoined: string;
+  isSuperuser: boolean;
+}
+
+export async function apiGetUsers(): Promise<AdminUser[]> {
+  return apiFetch<AdminUser[]>('/users/');
+}
+
+export async function apiCreateUser(data: {
+  username: string;
+  password: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+}): Promise<AdminUser> {
+  return apiFetch<AdminUser>('/users/', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function apiDeleteUser(id: number): Promise<void> {
+  await apiFetch<{ success: boolean }>(`/users/${id}/`, {
+    method: 'DELETE',
+  });
+}

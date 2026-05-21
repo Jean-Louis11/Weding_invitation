@@ -8,13 +8,17 @@ import {
   apiGetWeddingInfo,
   apiSaveWeddingInfo,
   apiChangePassword,
+  apiGetUsers,
+  apiCreateUser,
+  apiDeleteUser,
+  AdminUser,
 } from '../api';
 
 interface Props {
   onLogout: () => void;
 }
 
-type Tab = 'guests' | 'settings';
+type Tab = 'guests' | 'settings' | 'users';
 
 function StatusBadge({ status }: { status: Guest['rsvpStatus'] }) {
   const config = {
@@ -60,6 +64,14 @@ export default function AdminDashboard({ onLogout }: Props) {
   const [passError, setPassError] = useState('');
   const [passSaved, setPassSaved] = useState(false);
 
+  // Users
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [userForm, setUserForm] = useState({ username: '', password: '', email: '', firstName: '', lastName: '' });
+  const [userFormError, setUserFormError] = useState('');
+  const [userFormLoading, setUserFormLoading] = useState(false);
+  const [userDeleted, setUserDeleted] = useState(false);
+
   const refresh = async () => {
     try {
       const data = await apiGetGuests();
@@ -80,7 +92,17 @@ export default function AdminDashboard({ onLogout }: Props) {
       }
     };
     loadWeddingInfo();
+    loadUsers();
   }, []);
+
+  const loadUsers = async () => {
+    try {
+      const data = await apiGetUsers();
+      setUsers(data);
+    } catch (err: any) {
+      console.error('Failed to load users:', err);
+    }
+  };
 
   const filteredGuests = guests.filter(g => {
     const matchSearch = `${g.firstName} ${g.lastName} ${g.email}`.toLowerCase().includes(search.toLowerCase());
@@ -186,6 +208,37 @@ export default function AdminDashboard({ onLogout }: Props) {
     }
   };
 
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setUserFormError('');
+    if (!userForm.username || !userForm.password) {
+      setUserFormError('Le nom d\'utilisateur et le mot de passe sont requis.');
+      return;
+    }
+    setUserFormLoading(true);
+    try {
+      await apiCreateUser(userForm);
+      await loadUsers();
+      setUserForm({ username: '', password: '', email: '', firstName: '', lastName: '' });
+      setShowAddUserModal(false);
+    } catch (err: any) {
+      setUserFormError(err?.message || 'Erreur lors de la création de l\'utilisateur.');
+    } finally {
+      setUserFormLoading(false);
+    }
+  };
+
+  const handleDeleteUser = async (id: number) => {
+    try {
+      await apiDeleteUser(id);
+      await loadUsers();
+      setUserDeleted(true);
+      setTimeout(() => setUserDeleted(false), 2000);
+    } catch (err: any) {
+      alert(err?.message || 'Erreur lors de la suppression de l\'utilisateur.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -220,7 +273,8 @@ export default function AdminDashboard({ onLogout }: Props) {
           <nav className="flex gap-6">
             {[
               { key: 'guests', label: 'Gestion des invités', icon: '👥' },
-              { key: 'settings', label: 'Paramètres', icon: '⚙️' },
+              { key: 'settings', label: 'Informations du mariage', icon: '💍' },
+              { key: 'users', label: 'Utilisateurs', icon: '🔑' },
             ].map(t => (
               <button
                 key={t.key}
@@ -432,15 +486,15 @@ export default function AdminDashboard({ onLogout }: Props) {
                 {[
                   { key: 'groomName', label: 'Prénom du marié', type: 'text' },
                   { key: 'brideName', label: 'Prénom de la mariée', type: 'text' },
-                  { key: 'date', label: 'Date de la cérémonie', type: 'text' },
-                  { key: 'time', label: 'Heure de la cérémonie', type: 'text' },
+                  { key: 'date', label: 'Date de la cérémonie', type: 'date' },
+                  { key: 'time', label: 'Heure de la cérémonie', type: 'time' },
                   { key: 'venueName', label: 'Nom du lieu', type: 'text' },
                   { key: 'venueAddress', label: 'Adresse du lieu', type: 'text' },
-                  { key: 'receptionTime', label: 'Heure de la réception', type: 'text' },
+                  { key: 'receptionTime', label: 'Heure de la réception', type: 'time' },
                   { key: 'receptionVenue', label: 'Lieu de la réception', type: 'text' },
                   { key: 'receptionAddress', label: 'Adresse de la réception', type: 'text' },
                   { key: 'dressCode', label: 'Code vestimentaire', type: 'text' },
-                  { key: 'rsvpDeadline', label: 'Date limite de réponse', type: 'text' },
+                  { key: 'rsvpDeadline', label: 'Date limite de réponse', type: 'date' },
                 ].map(field => (
                   <div key={field.key}>
                     <label className="block text-xs font-medium text-gray-600 mb-1">{field.label}</label>
@@ -502,6 +556,106 @@ export default function AdminDashboard({ onLogout }: Props) {
                   ) : 'Changer le mot de passe'}
                 </button>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* ===== USERS TAB ===== */}
+        {tab === 'users' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">Utilisateurs autorisés</h2>
+                <p className="text-sm text-gray-500 mt-1">Gérez les personnes qui peuvent accéder à l'espace administrateur.</p>
+              </div>
+              <button
+                onClick={() => setShowAddUserModal(true)}
+                className="flex items-center gap-2 bg-gradient-to-r from-[#b8860b] to-[#d4a017] hover:from-[#a07709] hover:to-[#b8860b] text-white px-5 py-2.5 rounded-xl font-medium text-sm shadow-md hover:shadow-lg transition-all"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Ajouter un utilisateur
+              </button>
+            </div>
+
+            {userDeleted && (
+              <div className="bg-green-50 border border-green-200 rounded-xl px-5 py-3">
+                <p className="text-green-700 text-sm font-medium">Utilisateur supprimé avec succès.</p>
+              </div>
+            )}
+
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              {users.length === 0 ? (
+                <div className="text-center py-16">
+                  <span className="text-5xl mb-4 block">🔑</span>
+                  <p className="text-gray-400 text-sm">Aucun utilisateur autorisé.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="bg-gray-50 border-b border-gray-100">
+                        <th className="text-left px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Utilisateur</th>
+                        <th className="text-left px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Email</th>
+                        <th className="text-left px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Rôle</th>
+                        <th className="text-left px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Date de création</th>
+                        <th className="text-right px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-50">
+                      {users.map(user => (
+                        <tr key={user.id} className="hover:bg-gray-50/70 transition-colors">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-9 h-9 bg-gradient-to-br from-[#b8860b]/20 to-[#d4a017]/20 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span className="text-[#b8860b] font-medium text-sm">
+                                  {user.firstName ? user.firstName[0] : user.username[0]}
+                                  {user.lastName ? user.lastName[0] : ''}
+                                </span>
+                              </div>
+                              <div>
+                                <p className="font-medium text-gray-900 text-sm">{user.username}</p>
+                                {(user.firstName || user.lastName) && (
+                                  <p className="text-xs text-gray-400">{user.firstName} {user.lastName}</p>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 hidden md:table-cell">
+                            <p className="text-sm text-gray-600">{user.email || '—'}</p>
+                          </td>
+                          <td className="px-6 py-4 hidden lg:table-cell">
+                            {user.isSuperuser ? (
+                              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200">Superutilisateur</span>
+                            ) : (
+                              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">Administrateur</span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 hidden lg:table-cell">
+                            <span className="text-sm text-gray-500">
+                              {new Date(user.dateJoined).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={() => handleDeleteUser(user.id)}
+                                title="Supprimer"
+                                className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -595,6 +749,102 @@ export default function AdminDashboard({ onLogout }: Props) {
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                     </svg>
                   ) : 'Ajouter l\'invité'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ===== ADD USER MODAL ===== */}
+      {showAddUserModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div className="bg-gradient-to-r from-[#2d1f14] to-[#4a3728] px-6 py-4 flex items-center justify-between">
+              <h3 className="text-white font-medium">Ajouter un utilisateur</h3>
+              <button onClick={() => { setShowAddUserModal(false); setUserFormError(''); }} className="text-white/60 hover:text-white">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <form onSubmit={handleCreateUser} className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Nom d'utilisateur *</label>
+                <input
+                  type="text"
+                  value={userForm.username}
+                  onChange={e => setUserForm(f => ({ ...f, username: e.target.value }))}
+                  placeholder="jean.dupont"
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Mot de passe *</label>
+                <input
+                  type="password"
+                  value={userForm.password}
+                  onChange={e => setUserForm(f => ({ ...f, password: e.target.value }))}
+                  placeholder="Minimum 6 caractères"
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Email</label>
+                <input
+                  type="email"
+                  value={userForm.email}
+                  onChange={e => setUserForm(f => ({ ...f, email: e.target.value }))}
+                  placeholder="jean.dupont@email.com"
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Prénom</label>
+                  <input
+                    type="text"
+                    value={userForm.firstName}
+                    onChange={e => setUserForm(f => ({ ...f, firstName: e.target.value }))}
+                    placeholder="Jean"
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Nom</label>
+                  <input
+                    type="text"
+                    value={userForm.lastName}
+                    onChange={e => setUserForm(f => ({ ...f, lastName: e.target.value }))}
+                    placeholder="Dupont"
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20"
+                  />
+                </div>
+              </div>
+
+              {userFormError && (
+                <p className="text-red-500 text-xs bg-red-50 px-3 py-2 rounded-lg">{userFormError}</p>
+              )}
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => { setShowAddUserModal(false); setUserFormError(''); }}
+                  className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl font-medium text-sm hover:bg-gray-50 transition-colors"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  disabled={userFormLoading}
+                  className="flex-1 bg-gradient-to-r from-[#b8860b] to-[#d4a017] text-white py-2.5 rounded-xl font-medium text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                >
+                  {userFormLoading ? (
+                    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                    </svg>
+                  ) : 'Créer l\'utilisateur'}
                 </button>
               </div>
             </form>

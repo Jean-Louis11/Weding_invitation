@@ -339,7 +339,95 @@ def wedding_info_view(request):
     if request.method == 'GET':
         info = get_wedding_info()
         if info:
-            return JsonResponse(info.to_dict())
+    return JsonResponse(info.to_dict())
+
+
+# ══════════════════════════════════════════════
+# ENDPOINTS USERS (gestion des utilisateurs admin)
+# ══════════════════════════════════════════════
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+@admin_required
+def users_list_create(request):
+    """
+    GET  /api/users/  → Liste tous les utilisateurs staff (admin requis)
+    POST /api/users/  → Crée un nouvel utilisateur staff (admin requis)
+    """
+    if request.method == 'GET':
+        users = User.objects.filter(is_staff=True).order_by('username')
+        return JsonResponse([
+            {
+                'id': u.id,
+                'username': u.username,
+                'firstName': u.first_name,
+                'lastName': u.last_name,
+                'email': u.email,
+                'dateJoined': u.date_joined.isoformat(),
+                'isSuperuser': u.is_superuser,
+            }
+            for u in users
+        ], safe=False)
+
+    # POST — Création d'un nouvel utilisateur staff
+    data, error = parse_json_body(request)
+    if error:
+        return error
+
+    username = data.get('username', '').strip()
+    password = data.get('password', '')
+    email = data.get('email', '').strip()
+    first_name = data.get('firstName', '').strip()
+    last_name = data.get('lastName', '').strip()
+
+    if not username or not password:
+        return json_error("Le nom d'utilisateur et le mot de passe sont obligatoires.")
+
+    if User.objects.filter(username=username).exists():
+        return json_error("Ce nom d'utilisateur existe déjà.")
+
+    user = User.objects.create_user(
+        username=username,
+        email=email,
+        password=password,
+        first_name=first_name,
+        last_name=last_name,
+        is_staff=True,
+    )
+
+    return JsonResponse({
+        'id': user.id,
+        'username': user.username,
+        'firstName': user.first_name,
+        'lastName': user.last_name,
+        'email': user.email,
+        'dateJoined': user.date_joined.isoformat(),
+        'isSuperuser': user.is_superuser,
+    }, status=201)
+
+
+@csrf_exempt
+@require_http_methods(["DELETE"])
+@admin_required
+def user_delete(request, user_id):
+    """
+    DELETE /api/users/<id>/
+    Supprime un utilisateur staff par son ID (admin requis).
+    Empêche la suppression de son propre compte.
+    """
+    if request.user.id == user_id:
+        return json_error("Vous ne pouvez pas supprimer votre propre compte.", status=400)
+
+    try:
+        user = User.objects.get(pk=user_id, is_staff=True)
+    except User.DoesNotExist:
+        return json_error("Utilisateur non trouvé.", status=404)
+
+    user.delete()
+    return JsonResponse({
+        'success': True,
+        'message': 'Utilisateur supprimé avec succès.',
+    })
         return JsonResponse({
             'groomName': '', 'brideName': '', 'date': '', 'time': '',
             'venueName': '', 'venueAddress': '', 'receptionTime': '',
