@@ -370,8 +370,8 @@ export default function AdminDashboard({ onLogout }: Props) {
 
             {/* Actions bar */}
             <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-              <div className="flex flex-col sm:flex-row gap-3 flex-1">
-                <div className="relative flex-1 max-w-xs">
+              <div className="flex flex-col sm:flex-row gap-3 w-full sm:flex-1">
+                <div className="relative w-full sm:max-w-xs">
                   <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
@@ -386,7 +386,7 @@ export default function AdminDashboard({ onLogout }: Props) {
                 <select
                   value={filterStatus}
                   onChange={e => setFilterStatus(e.target.value as any)}
-                  className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] bg-white text-gray-700"
+                  className="w-full sm:w-auto border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] bg-white text-gray-700"
                 >
                   <option value="all">Tous les statuts</option>
                   <option value="pending">En attente</option>
