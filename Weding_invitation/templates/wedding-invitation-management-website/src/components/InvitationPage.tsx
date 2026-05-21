@@ -146,12 +146,12 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
         />
 
         <div className="absolute inset-0 flex items-center justify-center z-20">
-          <div data-pdf-circle className="relative w-[320px] h-[320px] md:w-[360px] md:h-[360px] rounded-full border-2 border-[#c9a84c] flex items-center justify-center" style={{ boxShadow: '0 0 0 4px rgba(201,168,76,0.1), 0 0 0 8px rgba(201,168,76,0.05)' }}>
-            <div data-pdf-circle-inner className="absolute inset-2 rounded-full border border-[#c9a84c] opacity-40" />
+          <div data-pdf-circle className="relative w-[320px] h-[320px] md:w-[360px] md:h-[360px] rounded-full flex items-center justify-center" style={{ boxShadow: '0 0 0 4px rgba(201,168,76,0.1), 0 0 0 8px rgba(201,168,76,0.05)' }}>
+            <div data-pdf-circle-inner className="absolute inset-2 rounded-full opacity-40" />
             
             <div className="relative z-10 text-center px-6 py-4 w-full">
               <div className="mb-2">
-                <div className="w-12 h-12 mx-auto border border-[#c9a84c] rounded-full flex items-center justify-center mb-1">
+                <div className="w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-1">
                   <span className="text-[#c9a84c] text-sm" style={{ fontFamily: "'Great Vibes', serif" }}>M</span>
                 </div>
                 <p className="text-[#9a8a6a] text-[8px] uppercase tracking-[0.15em] font-light leading-tight">
