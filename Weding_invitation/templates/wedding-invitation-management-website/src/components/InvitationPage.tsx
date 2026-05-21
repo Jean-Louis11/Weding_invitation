@@ -35,6 +35,8 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
   const [pdfLoading, setPdfLoading] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
+  const deadlinePassed = info.rsvpDeadline ? new Date(info.rsvpDeadline) < new Date() : false;
+
   useEffect(() => {
     const loadInfo = async () => {
       try {
@@ -216,7 +218,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
           </div>
 
           <div className="absolute bottom-24 left-0 right-0 flex justify-center z-30">
-            {!submitted && !showRSVP && (
+            {!submitted && !showRSVP && !deadlinePassed && (
               <button
                 onClick={() => setShowRSVP(true)}
                 className="bg-[#c9a84c] hover:bg-[#b8973d] text-white px-6 py-2 rounded-full text-[10px] tracking-[0.15em] uppercase font-medium transition-all duration-300 shadow-md"
@@ -226,7 +228,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
             )}
           </div>
 
-          {showRSVP && !submitted && (
+          {showRSVP && !submitted && !deadlinePassed && (
             <div data-rsvp-section className="absolute bottom-8 left-4 right-4 z-30">
               <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4">
                 <form onSubmit={handleSubmit} className="space-y-2">
@@ -422,13 +424,6 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
                       <p className="text-[#2a2a2a] text-xs italic">{info.dressCode}</p>
                     </div>
                   </>
-                )}
-
-                {info.rsvpDeadline && (
-                  <div>
-                    <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">Date limite de réponse</p>
-                    <p className="text-[#2a2a2a] text-xs font-medium">Avant le {info.rsvpDeadline}</p>
-                  </div>
                 )}
               </div>
             </div>
