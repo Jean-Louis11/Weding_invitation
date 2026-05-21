@@ -339,6 +339,45 @@ def wedding_info_view(request):
     if request.method == 'GET':
         info = get_wedding_info()
         if info:
+            return JsonResponse(info.to_dict())
+        return JsonResponse({
+            'groomName': '', 'brideName': '', 'date': '', 'time': '',
+            'venueName': '', 'venueAddress': '', 'receptionTime': '',
+            'receptionVenue': '', 'receptionAddress': '', 'dressCode': '', 'rsvpDeadline': '',
+        })
+
+    # PUT — Vérifier l'authentification admin
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return json_error("Authentification requise.", status=401)
+
+    data, error = parse_json_body(request)
+    if error:
+        return error
+
+    info = get_wedding_info()
+    if not info:
+        info = WeddingInfo.objects.create(pk=1)
+
+    field_mapping = {
+        'groomName': 'groom_name',
+        'brideName': 'bride_name',
+        'date': 'date',
+        'time': 'time',
+        'venueName': 'venue_name',
+        'venueAddress': 'venue_address',
+        'receptionTime': 'reception_time',
+        'receptionVenue': 'reception_venue',
+        'receptionAddress': 'reception_address',
+        'dressCode': 'dress_code',
+        'rsvpDeadline': 'rsvp_deadline',
+    }
+
+    for camel_key, snake_key in field_mapping.items():
+        if camel_key in data:
+            setattr(info, snake_key, data[camel_key])
+
+    info.save()
+
     return JsonResponse(info.to_dict())
 
 
@@ -428,44 +467,3 @@ def user_delete(request, user_id):
         'success': True,
         'message': 'Utilisateur supprimé avec succès.',
     })
-        return JsonResponse({
-            'groomName': '', 'brideName': '', 'date': '', 'time': '',
-            'venueName': '', 'venueAddress': '', 'receptionTime': '',
-            'receptionVenue': '', 'receptionAddress': '', 'dressCode': '', 'rsvpDeadline': '',
-        })
-
-    # PUT — Vérifier l'authentification admin
-    if not request.user.is_authenticated or not request.user.is_staff:
-        return json_error("Authentification requise.", status=401)
-
-    data, error = parse_json_body(request)
-    if error:
-        return error
-
-    info = get_wedding_info()
-    if not info:
-        info = WeddingInfo.objects.create(pk=1)
-
-    # Mapping camelCase → snake_case pour la mise à jour
-    field_mapping = {
-        'groomName': 'groom_name',
-        'brideName': 'bride_name',
-        'date': 'date',
-        'time': 'time',
-        'venueName': 'venue_name',
-        'venueAddress': 'venue_address',
-        'receptionTime': 'reception_time',
-        'receptionVenue': 'reception_venue',
-        'receptionAddress': 'reception_address',
-        'dressCode': 'dress_code',
-        'rsvpDeadline': 'rsvp_deadline',
-    }
-
-    # Mettre à jour uniquement les champs fournis
-    for camel_key, snake_key in field_mapping.items():
-        if camel_key in data:
-            setattr(info, snake_key, data[camel_key])
-
-    info.save()
-
-    return JsonResponse(info.to_dict())
