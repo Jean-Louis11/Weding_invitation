@@ -388,22 +388,13 @@ def wedding_info_view(request):
 
     info = get_wedding_info()
     if not info:
-        info = WeddingInfo.objects.create(pk=1)
+        info = WeddingInfo.objects.create(pk=1, **WEDDING_INFO_DEFAULTS)
 
-    # Gestion JSON vs multipart/form-data
-    is_multipart = request.content_type and 'multipart/form-data' in request.content_type
-    
-    if is_multipart:
-        data = request.POST.dict()
-        # Vérifier si un fichier a été uploadé
-        uploaded_file = request.FILES.get('coupleImage')
-        if uploaded_file:
-            info.couple_image = uploaded_file
-    else:
-        try:
-            data = json.loads(request.body)
-        except (json.JSONDecodeError, ValueError):
-            return json_error("Corps de requête invalide.")
+    # PUT — JSON uniquement (pour les uploads de fichiers, utiliser POST /api/wedding-info/upload/)
+    try:
+        data = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        return json_error("Corps de requête invalide.")
 
     field_mapping = {
         'groomName': 'groom_name',
@@ -427,6 +418,54 @@ def wedding_info_view(request):
             setattr(info, snake_key, data[camel_key])
 
     # Gérer la suppression d'image (JSON ou multipart)
+    if data.get('removeCoupleImage'):
+        if info.couple_image:
+            info.couple_image.delete(save=False)
+        info.couple_image = None
+
+    info.save()
+
+    return JsonResponse(info.to_dict())
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+@admin_required
+def wedding_info_upload(request):
+    """
+    POST /api/wedding-info/upload/
+    Met à jour les informations du mariage avec upload de fichier (multipart/form-data).
+    """
+    info = get_wedding_info()
+    if not info:
+        info = WeddingInfo.objects.create(pk=1, **WEDDING_INFO_DEFAULTS)
+
+    data = request.POST.dict()
+    uploaded_file = request.FILES.get('coupleImage')
+    if uploaded_file:
+        info.couple_image = uploaded_file
+
+    field_mapping = {
+        'groomName': 'groom_name',
+        'brideName': 'bride_name',
+        'date': 'date',
+        'time': 'time',
+        'venueName': 'venue_name',
+        'venueAddress': 'venue_address',
+        'receptionTime': 'reception_time',
+        'receptionVenue': 'reception_venue',
+        'receptionAddress': 'reception_address',
+        'dressCode': 'dress_code',
+        'rsvpDeadline': 'rsvp_deadline',
+        'lang': 'lang',
+        'card2Text': 'card2_text',
+        'card2TextEn': 'card2_text_en',
+    }
+
+    for camel_key, snake_key in field_mapping.items():
+        if camel_key in data:
+            setattr(info, snake_key, data[camel_key])
+
     if data.get('removeCoupleImage'):
         if info.couple_image:
             info.couple_image.delete(save=False)

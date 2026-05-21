@@ -24,6 +24,7 @@ urlpatterns = [
 
     # ── Informations du mariage ──
     path('wedding-info/', api_views.wedding_info_view, name='wedding-info'),
+    path('wedding-info/upload/', api_views.wedding_info_upload, name='wedding-info-upload'),
 
     # ── Gestion des utilisateurs ──
     path('users/', api_views.users_list_create, name='users-list-create'),

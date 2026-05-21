@@ -31,4 +31,5 @@ export interface WeddingInfo {
   card2Text: string;
   card2TextEn: string;
   coupleImage: string;
+  removeCoupleImage?: boolean;
 }

@@ -157,8 +157,8 @@ export async function apiSaveWeddingInfo(info: WeddingInfo, file?: File | null):
       }
     });
     formData.append('coupleImage', file);
-    return apiFetch<WeddingInfo>('/wedding-info/', {
-      method: 'PUT',
+    return apiFetch<WeddingInfo>('/wedding-info/upload/', {
+      method: 'POST',
       body: formData,
     });
   }
