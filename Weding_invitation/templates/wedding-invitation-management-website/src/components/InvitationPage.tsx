@@ -137,9 +137,9 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
 
   return (
     <div className="min-h-screen bg-[#f5f3f0] flex items-center justify-center p-4 md:p-8">
-      <div className="flex gap-6 overflow-x-auto pb-4 w-full max-w-6xl justify-center" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+      <div className="flex gap-6 overflow-x-auto pb-4 w-full max-w-6xl" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         {/* ===== CARD 1: Decorations.jpeg ===== */}
-        <div ref={cardRef} className="relative w-full max-w-md flex-shrink-0" style={{ minHeight: '800px' }}>
+        <div ref={cardRef} className="relative w-full max-w-md flex-shrink-0" style={{ minHeight: '1000px' }}>
           <img
             src="/static/images/Decorations.jpeg"
             alt=""
@@ -215,7 +215,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
             </div>
           </div>
 
-          <div className="absolute bottom-16 left-0 right-0 flex justify-center z-30">
+          <div className="absolute bottom-24 left-0 right-0 flex justify-center z-30">
             {!submitted && !showRSVP && (
               <button
                 onClick={() => setShowRSVP(true)}
@@ -351,7 +351,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
         </div>
 
         {/* ===== CARD 2: Decorations middle.jpeg ===== */}
-        <div className="relative w-full max-w-md flex-shrink-0" style={{ minHeight: '800px' }}>
+        <div className="relative w-full max-w-md flex-shrink-0" style={{ minHeight: '900px' }}>
           <img
             src="/static/images/Decorations middle.jpeg"
             alt=""
