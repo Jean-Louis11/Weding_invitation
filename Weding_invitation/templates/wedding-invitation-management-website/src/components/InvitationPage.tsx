@@ -139,7 +139,7 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
     <div className="min-h-screen bg-[#f5f3f0] flex items-center justify-center p-4 md:p-8">
       <div ref={cardRef} className="relative w-full max-w-md" style={{ minHeight: '800px' }}>
         <img
-          src="/static/images/Decorations.JPEG"
+          src="/static/images/Decorations.jpeg"
           alt=""
           className="absolute inset-0 w-full h-full object-cover pointer-events-none z-0"
           crossOrigin="anonymous"
