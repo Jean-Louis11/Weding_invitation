@@ -164,44 +164,13 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
                 </div>
 
                 <div className="mb-2">
-                  <h1 className="text-3xl md:text-4xl text-[#2a2a2a] font-light leading-none" style={{ fontFamily: "'Great Vibes', 'Cormorant Garamond', Georgia, serif" }}>
+                  <h1 className="text-4xl md:text-5xl text-[#2a2a2a] font-light leading-none" style={{ fontFamily: "'Great Vibes', 'Cormorant Garamond', Georgia, serif" }}>
                     {info.groomName || 'Robert'}
                   </h1>
                   <p className="text-[#c9a84c] text-sm my-0.5" style={{ fontFamily: "'Great Vibes', serif" }}>et</p>
-                  <h1 className="text-3xl md:text-4xl text-[#2a2a2a] font-light leading-none" style={{ fontFamily: "'Great Vibes', 'Cormorant Garamond', Georgia, serif" }}>
+                  <h1 className="text-4xl md:text-5xl text-[#2a2a2a] font-light leading-none" style={{ fontFamily: "'Great Vibes', 'Cormorant Garamond', Georgia, serif" }}>
                     {info.brideName || 'Sabina'}
                   </h1>
-                </div>
-
-                <div className="mb-2">
-                  <p className="text-[#9a8a6a] text-[10px] uppercase tracking-wider mb-0.5">
-                    {dateInfo.month}
-                  </p>
-                  <div className="flex items-center justify-center gap-1.5">
-                    <span className="text-[#7a7a6a] text-[8px] uppercase tracking-wider">
-                      {dateInfo.weekday}
-                    </span>
-                    <div className="h-px w-6 bg-[#c9a84c]" />
-                    <span className="text-2xl text-[#2a2a2a] font-bold" style={{ fontFamily: 'Georgia, serif' }}>
-                      {dateInfo.day}
-                    </span>
-                    <div className="h-px w-6 bg-[#c9a84c]" />
-                    <span className="text-[#7a7a6a] text-[8px] uppercase tracking-wider">
-                      {info.time || '10H'}
-                    </span>
-                  </div>
-                  <p className="text-[#9a8a6a] text-[9px] mt-0.5">2026</p>
-                </div>
-
-                <div className="mb-1.5">
-                  <p className="text-[#7a7a6a] text-[8px] uppercase tracking-wider leading-tight">
-                    @ {info.venueName || 'LE MARRIOTTE HOTEL'}
-                  </p>
-                  {info.venueAddress && (
-                    <p className="text-[#9a8a6a] text-[8px] mt-0.5 truncate px-2">
-                      {info.venueAddress}
-                    </p>
-                  )}
                 </div>
 
                 <div className="mb-1.5">
