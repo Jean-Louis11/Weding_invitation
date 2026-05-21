@@ -302,24 +302,24 @@ export default function AdminDashboard({ onLogout }: Props) {
       {/* Tabs */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex gap-6">
+          <nav className="flex gap-1 overflow-x-auto scrollbar-hide -mb-px" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {[
-              { key: 'guests', label: 'Gestion des invités', icon: '👥' },
-              { key: 'settings', label: 'Informations du mariage', icon: '💍' },
+              { key: 'guests', label: 'Invités', icon: '👥' },
+              { key: 'settings', label: 'Mariage', icon: '💍' },
               { key: 'users', label: 'Utilisateurs', icon: '🔑' },
               { key: 'account', label: 'Mon compte', icon: '👤' },
             ].map(t => (
               <button
                 key={t.key}
                 onClick={() => setTab(t.key as Tab)}
-                className={`flex items-center gap-2 py-4 text-sm font-medium border-b-2 transition-colors ${
+                className={`flex items-center gap-2 py-3 px-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
                   tab === t.key
                     ? 'border-[#b8860b] text-[#b8860b]'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
                 }`}
               >
                 <span>{t.icon}</span>
-                {t.label}
+                <span className="hidden sm:inline">{t.label}</span>
               </button>
             ))}
           </nav>
