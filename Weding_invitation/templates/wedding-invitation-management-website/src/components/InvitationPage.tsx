@@ -199,44 +199,40 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
           />
 
           <div className="absolute inset-0 flex items-center justify-center z-20">
-            <div data-pdf-circle className="relative w-[320px] h-[320px] md:w-[360px] md:h-[360px] rounded-full flex items-center justify-center overflow-hidden" style={{ boxShadow: '0 0 0 4px rgba(201,168,76,0.1), 0 0 0 8px rgba(201,168,76,0.05)' }}>
-              {info.coupleImage && (
-                <img src={info.coupleImage} alt="" className="absolute inset-0 w-full h-full object-cover" />
-              )}
-              <div className={`absolute inset-0 rounded-full ${info.coupleImage ? 'bg-black/40' : ''}`} />
-              <div data-pdf-circle-inner className={`absolute inset-2 rounded-full ${info.coupleImage ? 'border-2 border-white/30' : 'opacity-40'}`} />
+            <div data-pdf-circle className="relative w-[320px] h-[320px] md:w-[360px] md:h-[360px] rounded-full flex items-center justify-center" style={{ boxShadow: '0 0 0 4px rgba(201,168,76,0.1), 0 0 0 8px rgba(201,168,76,0.05)' }}>
+              <div data-pdf-circle-inner className="absolute inset-2 rounded-full opacity-40" />
               
               <div className="relative z-10 text-center px-6 py-4 w-full">
-                <div className="mb-2">
-                  <div className="w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-1 overflow-hidden">
-                    {info.coupleImage ? (
-                      <span className="text-[#c9a84c] text-sm" style={{ fontFamily: "'Great Vibes', serif" }}>M</span>
-                    ) : (
-                      <span className="text-[#c9a84c] text-sm" style={{ fontFamily: "'Great Vibes', serif" }}>M</span>
-                    )}
+                {info.coupleImage ? (
+                  <div className="w-24 h-24 md:w-28 md:h-28 mx-auto rounded-full overflow-hidden border-2 border-[#c9a84c]/30 mb-2 shadow-md">
+                    <img src={info.coupleImage} alt="" className="w-full h-full object-cover" />
                   </div>
-                  <p className={`text-[8px] uppercase tracking-[0.15em] font-light leading-tight ${info.coupleImage ? 'text-white/90' : 'text-[#9a8a6a]'}`}>
-                    {tr.invited.split('\n').map((line, i) => <>{i > 0 && <br />}{line}</>)}
-                  </p>
-                </div>
+                ) : (
+                  <div className="w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-1">
+                    <span className="text-[#c9a84c] text-sm" style={{ fontFamily: "'Great Vibes', serif" }}>M</span>
+                  </div>
+                )}
+                <p className="text-[#9a8a6a] text-[8px] uppercase tracking-[0.15em] font-light leading-tight">
+                  {tr.invited.split('\n').map((line, i) => <>{i > 0 && <br />}{line}</>)}
+                </p>
 
                 <div className="mb-2">
-                  <h1 className={`text-4xl md:text-5xl font-light leading-none ${info.coupleImage ? 'text-white' : 'text-[#2a2a2a]'}`} style={{ fontFamily: "'Great Vibes', 'Cormorant Garamond', Georgia, serif" }}>
+                  <h1 className="text-4xl md:text-5xl text-[#2a2a2a] font-light leading-none" style={{ fontFamily: "'Great Vibes', 'Cormorant Garamond', Georgia, serif" }}>
                     {info.groomName || 'Robert'}
                   </h1>
                   <p className="text-[#c9a84c] text-sm my-0.5" style={{ fontFamily: "'Great Vibes', serif" }}>{tr.and}</p>
-                  <h1 className={`text-4xl md:text-5xl font-light leading-none ${info.coupleImage ? 'text-white' : 'text-[#2a2a2a]'}`} style={{ fontFamily: "'Great Vibes', 'Cormorant Garamond', Georgia, serif" }}>
+                  <h1 className="text-4xl md:text-5xl text-[#2a2a2a] font-light leading-none" style={{ fontFamily: "'Great Vibes', 'Cormorant Garamond', Georgia, serif" }}>
                     {info.brideName || 'Sabina'}
                   </h1>
                 </div>
 
                 <div className="mb-1.5">
-                  <p className={`text-[8px] uppercase tracking-[0.15em] ${info.coupleImage ? 'text-white/80' : 'text-[#c9a84c]'}`}>
+                  <p className="text-[#c9a84c] text-[8px] uppercase tracking-[0.15em]">
                     {guest.plusOne ? tr.couple : tr.individual}
                   </p>
                 </div>
 
-                <p className={`text-xs italic ${info.coupleImage ? 'text-white/80' : 'text-[#9a8a6a]'}`} style={{ fontFamily: "'Great Vibes', serif" }}>
+                <p className="text-[#9a8a6a] text-xs italic" style={{ fontFamily: "'Great Vibes', serif" }}>
                   {tr.receptionToFollow}
                 </p>
               </div>
