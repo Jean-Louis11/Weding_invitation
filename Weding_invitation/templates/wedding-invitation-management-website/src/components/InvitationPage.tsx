@@ -145,14 +145,6 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
           crossOrigin="anonymous"
         />
 
-        <div className="absolute inset-2 border border-[#c9a84c] opacity-50 z-10 pointer-events-none" />
-        <div className="absolute inset-[10px] border border-[#c9a84c] opacity-30 z-10 pointer-events-none" />
-
-        <div className="absolute top-3 left-3 w-8 h-8 border-t-2 border-l-2 border-[#c9a84c] z-10" />
-        <div className="absolute top-3 right-3 w-8 h-8 border-t-2 border-r-2 border-[#c9a84c] z-10" />
-        <div className="absolute bottom-3 left-3 w-8 h-8 border-b-2 border-l-2 border-[#c9a84c] z-10" />
-        <div className="absolute bottom-3 right-3 w-8 h-8 border-b-2 border-r-2 border-[#c9a84c] z-10" />
-
         <div className="absolute inset-0 flex items-center justify-center z-20">
           <div data-pdf-circle className="relative w-[320px] h-[320px] md:w-[360px] md:h-[360px] rounded-full border-2 border-[#c9a84c] flex items-center justify-center" style={{ boxShadow: '0 0 0 4px rgba(201,168,76,0.1), 0 0 0 8px rgba(201,168,76,0.05)' }}>
             <div data-pdf-circle-inner className="absolute inset-2 rounded-full border border-[#c9a84c] opacity-40" />
@@ -169,11 +161,11 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
 
               <div className="mb-2">
                 <h1 className="text-3xl md:text-4xl text-[#2a2a2a] font-light leading-none" style={{ fontFamily: "'Great Vibes', 'Cormorant Garamond', Georgia, serif" }}>
-                  {info.brideName || 'Sabina'}
+                  {info.groomName || 'Robert'}
                 </h1>
                 <p className="text-[#c9a84c] text-sm my-0.5" style={{ fontFamily: "'Great Vibes', serif" }}>et</p>
                 <h1 className="text-3xl md:text-4xl text-[#2a2a2a] font-light leading-none" style={{ fontFamily: "'Great Vibes', 'Cormorant Garamond', Georgia, serif" }}>
-                  {info.groomName || 'Robert'}
+                  {info.brideName || 'Sabina'}
                 </h1>
               </div>
 
