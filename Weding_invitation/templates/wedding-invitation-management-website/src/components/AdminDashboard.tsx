@@ -11,6 +11,8 @@ import {
   apiGetUsers,
   apiCreateUser,
   apiDeleteUser,
+  apiGetCurrentUser,
+  apiUpdateCurrentUser,
   AdminUser,
 } from '../api';
 
@@ -18,7 +20,7 @@ interface Props {
   onLogout: () => void;
 }
 
-type Tab = 'guests' | 'settings' | 'users';
+type Tab = 'guests' | 'settings' | 'users' | 'account';
 
 function StatusBadge({ status }: { status: Guest['rsvpStatus'] }) {
   const config = {
@@ -72,6 +74,11 @@ export default function AdminDashboard({ onLogout }: Props) {
   const [userFormLoading, setUserFormLoading] = useState(false);
   const [userDeleted, setUserDeleted] = useState(false);
 
+  // Account
+  const [currentUser, setCurrentUser] = useState<{ username: string; firstName: string; lastName: string; email: string }>({ username: '', firstName: '', lastName: '', email: '' });
+  const [accountSaved, setAccountSaved] = useState(false);
+  const [accountLoading, setAccountLoading] = useState(false);
+
   const refresh = async () => {
     try {
       const data = await apiGetGuests();
@@ -93,6 +100,7 @@ export default function AdminDashboard({ onLogout }: Props) {
     };
     loadWeddingInfo();
     loadUsers();
+    loadCurrentUser();
   }, []);
 
   const loadUsers = async () => {
@@ -101,6 +109,15 @@ export default function AdminDashboard({ onLogout }: Props) {
       setUsers(data);
     } catch (err: any) {
       console.error('Failed to load users:', err);
+    }
+  };
+
+  const loadCurrentUser = async () => {
+    try {
+      const data = await apiGetCurrentUser();
+      setCurrentUser(data);
+    } catch (err: any) {
+      console.error('Failed to load current user:', err);
     }
   };
 
@@ -208,6 +225,21 @@ export default function AdminDashboard({ onLogout }: Props) {
     }
   };
 
+  const handleSaveAccount = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAccountLoading(true);
+    try {
+      const saved = await apiUpdateCurrentUser({ firstName: currentUser.firstName, lastName: currentUser.lastName, email: currentUser.email });
+      setCurrentUser(saved);
+      setAccountSaved(true);
+      setTimeout(() => setAccountSaved(false), 2000);
+    } catch (err: any) {
+      console.error('Failed to update account:', err);
+    } finally {
+      setAccountLoading(false);
+    }
+  };
+
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     setUserFormError('');
@@ -275,6 +307,7 @@ export default function AdminDashboard({ onLogout }: Props) {
               { key: 'guests', label: 'Gestion des invités', icon: '👥' },
               { key: 'settings', label: 'Informations du mariage', icon: '💍' },
               { key: 'users', label: 'Utilisateurs', icon: '🔑' },
+              { key: 'account', label: 'Mon compte', icon: '👤' },
             ].map(t => (
               <button
                 key={t.key}
@@ -512,6 +545,67 @@ export default function AdminDashboard({ onLogout }: Props) {
                   className="w-full bg-[#b8860b] hover:bg-[#a07709] text-white py-3 rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
                 >
                   {settingsSaved ? (
+                    <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg> Sauvegardé !</>
+                  ) : 'Sauvegarder les informations'}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ===== ACCOUNT TAB ===== */}
+        {tab === 'account' && (
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Profile info */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
+                <span>👤</span> Informations personnelles
+              </h2>
+              <form onSubmit={handleSaveAccount} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Nom d'utilisateur</label>
+                  <input
+                    type="text"
+                    value={currentUser.username}
+                    disabled
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Prénom</label>
+                    <input
+                      type="text"
+                      value={currentUser.firstName}
+                      onChange={e => setCurrentUser(prev => ({ ...prev, firstName: e.target.value }))}
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Nom</label>
+                    <input
+                      type="text"
+                      value={currentUser.lastName}
+                      onChange={e => setCurrentUser(prev => ({ ...prev, lastName: e.target.value }))}
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={currentUser.email}
+                    onChange={e => setCurrentUser(prev => ({ ...prev, email: e.target.value }))}
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#b8860b] focus:ring-2 focus:ring-[#b8860b]/20 text-gray-800"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={accountLoading}
+                  className="w-full bg-[#b8860b] hover:bg-[#a07709] text-white py-3 rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                >
+                  {accountSaved ? (
                     <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg> Sauvegardé !</>
                   ) : 'Sauvegarder les informations'}
                 </button>

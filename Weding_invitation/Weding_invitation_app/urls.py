@@ -12,6 +12,7 @@ urlpatterns = [
     path('admin/logout/', api_views.admin_logout, name='admin-logout'),
     path('admin/check/', api_views.admin_check, name='admin-check'),
     path('admin/change-password/', api_views.admin_change_password, name='admin-change-password'),
+    path('admin/me/', api_views.admin_me, name='admin-me'),
 
     # ── Gestion des invités ──
     path('guests/', api_views.guests_list_create, name='guests-list-create'),

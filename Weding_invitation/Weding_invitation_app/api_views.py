@@ -186,6 +186,40 @@ def admin_change_password(request):
     })
 
 
+@csrf_exempt
+@require_http_methods(["GET", "PUT"])
+@admin_required
+def admin_me(request):
+    """
+    GET  /api/admin/me/  → Récupère les infos de l'utilisateur connecté
+    PUT  /api/admin/me/  → Met à jour les infos de l'utilisateur connecté
+    """
+    if request.method == 'GET':
+        return JsonResponse({
+            'username': request.user.username,
+            'firstName': request.user.first_name,
+            'lastName': request.user.last_name,
+            'email': request.user.email,
+        })
+
+    # PUT
+    data, error = parse_json_body(request)
+    if error:
+        return error
+
+    request.user.first_name = data.get('firstName', request.user.first_name)
+    request.user.last_name = data.get('lastName', request.user.last_name)
+    request.user.email = data.get('email', request.user.email)
+    request.user.save()
+
+    return JsonResponse({
+        'username': request.user.username,
+        'firstName': request.user.first_name,
+        'lastName': request.user.last_name,
+        'email': request.user.email,
+    })
+
+
 # ══════════════════════════════════════════════
 # ENDPOINTS GUESTS (invités)
 # ══════════════════════════════════════════════
