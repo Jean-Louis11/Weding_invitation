@@ -377,6 +377,12 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
               </div>
 
               <div className="space-y-3">
+                {info.card2Text && (
+                  <div>
+                    <p className="text-[#2a2a2a] text-xs leading-relaxed whitespace-pre-line">{info.card2Text}</p>
+                  </div>
+                )}
+
                 <div>
                   <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">{tr.date}</p>
                   <p className="text-[#2a2a2a] text-sm font-medium" style={{ fontFamily: "'Georgia', serif" }}>
@@ -428,15 +434,6 @@ export default function InvitationPage({ guest, onRsvpSubmitted }: Props) {
                     <div>
                       <p className="text-[#9a8a6a] text-[8px] uppercase tracking-wider mb-0.5">{tr.dressCode}</p>
                       <p className="text-[#2a2a2a] text-xs italic">{info.dressCode}</p>
-                    </div>
-                  </>
-                )}
-
-                {info.card2Text && (
-                  <>
-                    <div className="w-12 h-px bg-[#c9a84c]/40 mx-auto" />
-                    <div>
-                      <p className="text-[#2a2a2a] text-xs leading-relaxed whitespace-pre-line">{info.card2Text}</p>
                     </div>
                   </>
                 )}
