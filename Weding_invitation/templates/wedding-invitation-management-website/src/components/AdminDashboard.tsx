@@ -69,7 +69,7 @@ export default function AdminDashboard({ onLogout }: Props) {
   // Users
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [showAddUserModal, setShowAddUserModal] = useState(false);
-  const [userForm, setUserForm] = useState({ username: '', password: '', email: '', firstName: '', lastName: '' });
+  const [userForm, setUserForm] = useState({ username: '', password: '', email: '', firstName: '', lastName: '', isSuperuser: false });
   const [userFormError, setUserFormError] = useState('');
   const [userFormLoading, setUserFormLoading] = useState(false);
   const [userDeleted, setUserDeleted] = useState(false);
@@ -251,7 +251,7 @@ export default function AdminDashboard({ onLogout }: Props) {
     try {
       await apiCreateUser(userForm);
       await loadUsers();
-      setUserForm({ username: '', password: '', email: '', firstName: '', lastName: '' });
+      setUserForm({ username: '', password: '', email: '', firstName: '', lastName: '', isSuperuser: false });
       setShowAddUserModal(false);
     } catch (err: any) {
       setUserFormError(err?.message || 'Erreur lors de la création de l\'utilisateur.');
@@ -963,6 +963,19 @@ export default function AdminDashboard({ onLogout }: Props) {
                   />
                 </div>
               </div>
+
+              <label className="flex items-center gap-3 cursor-pointer bg-gray-50 rounded-xl px-4 py-3 hover:bg-gray-100 transition-colors">
+                <input
+                  type="checkbox"
+                  checked={userForm.isSuperuser}
+                  onChange={e => setUserForm(f => ({ ...f, isSuperuser: e.target.checked }))}
+                  className="w-4 h-4 accent-[#b8860b] rounded"
+                />
+                <div>
+                  <span className="text-sm font-medium text-gray-700">Superutilisateur</span>
+                  <p className="text-xs text-gray-400">Accès complet à toutes les fonctionnalités</p>
+                </div>
+              </label>
 
               {userFormError && (
                 <p className="text-red-500 text-xs bg-red-50 px-3 py-2 rounded-lg">{userFormError}</p>

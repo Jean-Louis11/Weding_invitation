@@ -452,6 +452,7 @@ def users_list_create(request):
     email = data.get('email', '').strip()
     first_name = data.get('firstName', '').strip()
     last_name = data.get('lastName', '').strip()
+    is_superuser = data.get('isSuperuser', False)
 
     if not username or not password:
         return json_error("Le nom d'utilisateur et le mot de passe sont obligatoires.")
@@ -466,6 +467,7 @@ def users_list_create(request):
         first_name=first_name,
         last_name=last_name,
         is_staff=True,
+        is_superuser=is_superuser,
     )
 
     return JsonResponse({

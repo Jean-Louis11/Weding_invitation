@@ -183,6 +183,7 @@ export async function apiCreateUser(data: {
   email?: string;
   firstName?: string;
   lastName?: string;
+  isSuperuser?: boolean;
 }): Promise<AdminUser> {
   return apiFetch<AdminUser>('/users/', {
     method: 'POST',
